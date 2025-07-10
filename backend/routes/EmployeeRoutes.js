@@ -1,8 +1,8 @@
-// routes/EmployeeRoutes.js
 const express = require("express");
-
-const upload = require("../middleware/uploadMiddleware");
 const router = express.Router();
+const upload = require("../middleware/uploadMiddleware");
+const authEmployee = require("../middleware/authEmployee");
+
 const {
   loginEmployee,
   forgotPasswordEmployee,
@@ -16,20 +16,20 @@ const {
   removeEmployeeProfilePicture,
 } = require("../controllers/EmployeeController");
 
-const authEmployee = require("../middleware/authEmployee");
-
+// ✅ Public Routes (no auth required)
 router.post("/login", loginEmployee);
 router.post("/forgot-password", forgotPasswordEmployee);
 router.post("/reset-password/:token", resetPasswordEmployee);
 
-// ✅ Protected routes
+// ✅ Protected Routes (require session login)
 router.post("/apply-leave", authEmployee, applyLeave);
 router.get("/me", authEmployee, getLoggedInEmployee);
+router.get("/my-profile", authEmployee, getMyProfile);
+router.put("/my-profile", authEmployee, updateMyProfile);
+router.get("/my-leaves", authEmployee, getMyLeaves);
 
-router.get("/my-profile", getMyProfile);
-router.put("/my-profile", updateMyProfile);
-router.get("/my-leaves", getMyLeaves);
-router.post("/logout", (req, res) => {
+// ✅ Logout (session clear)
+router.post("/logout", authEmployee, (req, res) => {
   req.session.destroy(err => {
     if (err) {
       return res.status(500).json({ message: "Logout failed" });
@@ -38,6 +38,8 @@ router.post("/logout", (req, res) => {
     res.json({ message: "Logged out successfully" });
   });
 });
+
+// ✅ Profile Picture Upload/Remove
 router.post(
   "/upload-profile-picture",
   authEmployee,
@@ -50,6 +52,5 @@ router.delete(
   authEmployee,
   removeEmployeeProfilePicture
 );
-
 
 module.exports = router;

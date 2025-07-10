@@ -19,18 +19,16 @@ const {
 
 const checkHRSession = require("../middleware/checkHRSession");
 
-// Public routes
+// ✅ Public routes (no session required)
 router.post("/register", registerHR);
 router.post("/login", loginHR);
 router.post("/forgot-password", forgotPasswordHR);
-router.post("/reset-password/:token", resetPasswordHR);
+router.post("/reset-password/:token", resetPasswordHR); // must stay public
 router.post("/logout", logoutHR);
 
-// Protected HR session routes
+// ✅ Protected HR routes (require session)
 router.get("/profile", checkHRSession, getHRProfile);
 router.put("/profile", checkHRSession, updateHRProfile);
-
-// Leave request handling
 router.get("/leaves", checkHRSession, getHRLeaveRequests);
 router.put("/leaves/:leaveId", checkHRSession, handleHRLeave);
 router.get("/hr-employees", checkHRSession, hrgetAllEmployees);
@@ -43,7 +41,8 @@ router.post(
 );
 router.delete(
   "/remove-profile-picture",
-  checkHRSession, // Make sure this correctly sets `req.session.hr`
+  checkHRSession,
   removeHRProfilePicture
 );
+
 module.exports = router;
