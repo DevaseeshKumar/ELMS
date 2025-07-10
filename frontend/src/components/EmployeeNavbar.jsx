@@ -16,7 +16,7 @@ const EmployeeNavbar = () => {
   useEffect(() => {
     const fetchEmployee = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/employee/my-profile", {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/employee/my-profile`, {
           credentials: "include",
         });
         if (res.ok) setEmployee(await res.json());
@@ -38,7 +38,7 @@ const EmployeeNavbar = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:8000/api/employee/logout", {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/employee/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -93,7 +93,7 @@ const EmployeeNavbar = () => {
             onClick={() => setDropdownOpen((prev) => !prev)}
             src={
               employee?.profileImage
-                ? `http://localhost:8000${employee.profileImage}?t=${Date.now()}`
+                ? `${import.meta.env.VITE_API_BASE_URL}${employee.profileImage}?t=${Date.now()}`
                 : `https://ui-avatars.com/api/?name=${employee?.username || "E"}&background=155e75&color=fff`
             }
             alt="Avatar"

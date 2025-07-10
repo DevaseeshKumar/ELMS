@@ -19,7 +19,7 @@ const AdminHRApproval = () => {
     setIsLoading(true);
     setFetchError(false);
     try {
-      const res = await axios.get("http://localhost:8000/api/admin/pending-hrs", {
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/admin/pending-hrs`, {
         withCredentials: true,
       });
       setHRs(res.data);
@@ -56,7 +56,7 @@ const AdminHRApproval = () => {
   const handleAction = async (hrId, approve) => {
     try {
       const res = await axios.put(
-        `http://localhost:8000/api/admin/hr-status/${hrId}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api//admin/hr-status/${hrId}`,
         { approve },
         { withCredentials: true }
       );

@@ -60,7 +60,7 @@ const HrDashboard = () => {
 
   const fetchLeaves = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/hr/leaves", {
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/hr/leaves`, {
         withCredentials: true,
       });
 

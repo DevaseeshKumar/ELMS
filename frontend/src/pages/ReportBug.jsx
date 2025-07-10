@@ -15,7 +15,7 @@ const BugReport = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8000/api/contact/report-bug', form);
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/contact/report-bug`, form);
       setStatus('Bug report sent successfully!');
       setForm({ name: '', email: '', bug: '' });
     } catch (err) {

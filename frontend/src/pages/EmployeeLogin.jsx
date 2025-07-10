@@ -31,7 +31,7 @@ const EmployeeLogin = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:8000/api/employee/login",
+        `${import.meta.env.VITE_API_BASE_URL}/api/employee/login`,
         {
           email: form.email,
           password: form.password,

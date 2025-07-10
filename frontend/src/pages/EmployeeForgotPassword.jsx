@@ -10,7 +10,7 @@ const EmployeeForgotPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:8000/api/employee/forgot-password", { email });
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/employee/forgot-password`, { email });
       setMessage(res.data.message);
     } catch (err) {
       setMessage(err.response?.data?.message || "Error sending reset link");

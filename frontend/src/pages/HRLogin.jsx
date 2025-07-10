@@ -31,7 +31,7 @@ const HRLogin = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:8000/api/hr/login",
+        `${import.meta.env.VITE_API_BASE_URL}/api/hr/login`,
         {
           email: form.email,
           password: form.password,

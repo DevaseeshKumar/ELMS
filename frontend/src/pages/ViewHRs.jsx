@@ -40,7 +40,7 @@ const ViewHRs = () => {
       setIsLoading(true);
       setFetchError(false);
 
-      const res = await fetch("http://localhost:8000/api/admin/hrs", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/hrs`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to fetch HRs");
@@ -65,7 +65,7 @@ const ViewHRs = () => {
     if (!selectedHR) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/hr/${selectedHR._id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/hr/${selectedHR._id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -189,7 +189,7 @@ const ViewHRs = () => {
                 <div className="flex items-center gap-5">
                   {hr.profileImage ? (
                     <img
-                      src={`http://localhost:8000${hr.profileImage}`}
+                      src={`${import.meta.env.VITE_API_BASE_URL}${hr.profileImage}`}
                       alt="HR Profile"
                       className="w-16 h-16 rounded-full object-cover border-2 border-indigo-500"
                       loading="lazy"

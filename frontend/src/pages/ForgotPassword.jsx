@@ -11,7 +11,7 @@ const AdminForgotPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:8000/api/admin/forgot-password", { email });
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/admin/forgot-password`, { email });
       toast.success(res.data.message || "Reset link sent! Check your email.", {
         position: "top-right",
         autoClose: 3000,

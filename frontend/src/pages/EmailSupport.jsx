@@ -14,7 +14,7 @@ const EmailInquiry = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8000/api/contact/inquiry', {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/contact/inquiry`, {
   name: form.name,
   email: form.email,
   message: form.inquiry, // ✅ rename field to match backend

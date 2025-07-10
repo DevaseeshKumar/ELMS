@@ -40,7 +40,7 @@ const AddEmployee = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:8000/api/admin/add-employee",
+        `${import.meta.env.VITE_API_BASE_URL}/api/admin/add-employee`,
         form,
         { withCredentials: true }
       );

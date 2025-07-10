@@ -37,7 +37,7 @@ const UpdateEmployee = () => {
   useEffect(() => {
     const fetchEmployee = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/admin/employee/${id}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/employee/${id}`, {
           credentials: "include",
         });
         if (!res.ok) throw new Error("Failed to fetch employee");
@@ -62,7 +62,7 @@ const UpdateEmployee = () => {
 
   const handleUpdate = async () => {
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/employee/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/employee/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -105,7 +105,7 @@ const UpdateEmployee = () => {
           username={formData.username}
           imageUrl={
             formData.profileImage
-              ? `http://localhost:8000${formData.profileImage}?t=${Date.now()}`
+              ? `${import.meta.env.VITE_API_BASE_URL}${formData.profileImage}?t=${Date.now()}`
               : ""
           }
           size={100}

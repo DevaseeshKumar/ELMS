@@ -35,7 +35,7 @@ const EmployeeProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/employee/my-profile", {
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/employee/my-profile`, {
           withCredentials: true,
         });
         setProfile(res.data);
@@ -81,7 +81,7 @@ const EmployeeProfile = () => {
           <div className="flex items-center justify-center mb-6">
             {profile.profileImage ? (
               <img
-                src={`http://localhost:8000${profile.profileImage}`}
+                src={`${import.meta.env.VITE_API_BASE_URL}${profile.profileImage}`}
                 alt={`${profile.username}'s profile`}
                 className="w-28 h-28 rounded-full object-cover border-4 border-cyan-500 shadow-md"
               />

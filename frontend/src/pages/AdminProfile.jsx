@@ -37,7 +37,7 @@ const AdminProfile = () => {
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/admin/my-profile", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/my-profile`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to fetch admin profile");
@@ -63,7 +63,7 @@ const AdminProfile = () => {
 
   const handleUpdate = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/admin/my-profile", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/my-profile`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -101,7 +101,7 @@ const AdminProfile = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:8000/api/admin/change-password", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/change-password`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -144,7 +144,7 @@ const AdminProfile = () => {
     imageData.append("profileImage", file);
 
     try {
-      const res = await fetch("http://localhost:8000/api/admin/upload-profile-picture", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/upload-profile-picture`, {
         method: "POST",
         credentials: "include",
         body: imageData,
@@ -175,7 +175,7 @@ const AdminProfile = () => {
 
   const handleRemoveProfilePicture = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/admin/remove-profile-picture", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/remove-profile-picture`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -215,7 +215,7 @@ const AdminProfile = () => {
           username={formData.username}
           imageUrl={
             formData.profileImage
-              ? `http://localhost:8000${formData.profileImage}?t=${Date.now()}`
+              ? `${import.meta.env.VITE_API_BASE_URL}${formData.profileImage}?t=${Date.now()}`
               : ""
           }
           size={100}

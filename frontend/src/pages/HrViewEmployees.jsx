@@ -37,7 +37,7 @@ const ViewEmployeesHR = () => {
 
   const fetchEmployees = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/hr/hr-employees", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/hr/hr-employees`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to fetch employees");
@@ -62,7 +62,7 @@ const ViewEmployeesHR = () => {
 
   const fetchLeaves = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/hr/leaves", {
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/hr/leaves`, {
         withCredentials: true,
       });
       const leaves = res.data;
@@ -162,7 +162,7 @@ const ViewEmployeesHR = () => {
                       <img
                         src={
                           emp.profileImage
-                            ? `http://localhost:8000${emp.profileImage}`
+                            ? `http://${import.meta.env.VITE_API_BASE_URL}${emp.profileImage}`
                             : "https://via.placeholder.com/48"
                         }
                         alt="Profile"

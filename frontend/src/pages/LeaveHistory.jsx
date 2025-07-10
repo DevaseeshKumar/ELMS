@@ -44,7 +44,7 @@ const LeaveHistory = () => {
 
     const fetchLeaves = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/employee/my-leaves", {
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/employee/my-leaves`, {
           withCredentials: true,
         });
         setLeaves(res.data);

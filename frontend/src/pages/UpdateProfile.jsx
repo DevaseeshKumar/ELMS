@@ -42,7 +42,7 @@ const UpdateProfile = () => {
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/employee/my-profile", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/employee/my-profile`, {
         credentials: "include",
       });
       const data = await res.json();
@@ -63,7 +63,7 @@ const UpdateProfile = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:8000/api/employee/my-profile", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/employee/my-profile`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -88,7 +88,7 @@ const UpdateProfile = () => {
 
   const handleUpdate = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/employee/my-profile", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/employee/my-profile`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -111,7 +111,7 @@ const UpdateProfile = () => {
     uploadData.append("profileImage", file);
 
     try {
-      const res = await fetch("http://localhost:8000/api/employee/upload-profile-picture", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/employee/upload-profile-picture`, {
         method: "POST",
         credentials: "include",
         body: uploadData,
@@ -132,7 +132,7 @@ const UpdateProfile = () => {
 
   const handleRemoveImage = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/employee/remove-profile-picture", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/employee/remove-profile-picture`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -159,7 +159,7 @@ const UpdateProfile = () => {
         <div className="flex justify-center mb-6">
           <Avatar
             username={profile.username}
-            imageUrl={profile.profileImage ? `http://localhost:8000${profile.profileImage}?t=${Date.now()}` : ""}
+            imageUrl={profile.profileImage ? `${import.meta.env.VITE_API_BASE_URL}${profile.profileImage}?t=${Date.now()}` : ""}
             size={110}
           />
         </div>

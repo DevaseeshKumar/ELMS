@@ -15,7 +15,7 @@ const Support = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8000/api/contact/support-request', form);
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/contact/support-request`, form);
       setStatus('Support request sent successfully!');
       setForm({ name: '', email: '', phone: '', reason: '' });
     } catch (err) {

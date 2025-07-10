@@ -18,7 +18,7 @@ const AdminNavbar = () => {
   useEffect(() => {
     const fetchAdmin = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/admin/my-profile", {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/my-profile`, {
           credentials: "include",
         });
         if (res.ok) {
@@ -46,7 +46,7 @@ const AdminNavbar = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:8000/api/admin/logout", {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -118,7 +118,7 @@ const AdminNavbar = () => {
               onClick={() => setDropdownOpen((prev) => !prev)}
               src={
                 admin?.profileImage
-                  ? `http://localhost:8000${admin.profileImage}?t=${Date.now()}`
+                  ? `${import.meta.env.VITE_API_BASE_URL}${admin.profileImage}?t=${Date.now()}`
                   : `https://ui-avatars.com/api/?name=${admin?.username || "A"}&background=6D28D9&color=fff`
               }
               alt="Admin Avatar"

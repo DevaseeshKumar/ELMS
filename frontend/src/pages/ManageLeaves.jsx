@@ -46,7 +46,7 @@ const ManageLeaves = () => {
 
   const fetchLeaves = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/admin/leaves", {
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/admin/leaves`, {
         withCredentials: true,
       });
 
@@ -105,7 +105,7 @@ setLeaves(sortedLeaves);
     setApprovingLeaveId(id);
     try {
       const res = await axios.put(
-        `http://localhost:8000/api/admin/leave-decision/${id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/admin/leave-decision/${id}`,
         {
           action: "Approved",
           reviewer: { username: admin.username, role: "Admin" },
@@ -130,7 +130,7 @@ setLeaves(sortedLeaves);
     setRejectingNowId(rejectingLeaveId);
     try {
       const res = await axios.put(
-        `http://localhost:8000/api/admin/leave-decision/${rejectingLeaveId}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/admin/leave-decision/${rejectingLeaveId}`,
         {
           action: "Rejected",
           reason: rejectionReason,

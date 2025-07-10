@@ -69,11 +69,11 @@ const AdminDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const empRes = await fetch("http://localhost:8000/api/admin/employees", { credentials: "include" });
+      const empRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/employees`, { credentials: "include" });
       const empData = await empRes.json();
       setEmployeeCount(empData.length);
 
-      const hrRes = await fetch("http://localhost:8000/api/admin/hrs", { credentials: "include" });
+      const hrRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/hrs`, { credentials: "include" });
       const hrData = await hrRes.json();
       setHRCount(hrData.length);
 
@@ -83,7 +83,7 @@ const AdminDashboard = () => {
       ];
       setUsers(combinedUsers);
 
-      const leaveRes = await axios.get("http://localhost:8000/api/admin/leaves", { withCredentials: true });
+      const leaveRes = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/admin/leaves`, { withCredentials: true });
       const leaves = leaveRes.data;
       const empMap = {};
       const monthlyMap = Array(12).fill(0);

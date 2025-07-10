@@ -42,7 +42,7 @@ const HRManageLeaves = () => {
 
   const fetchLeaves = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/hr/leaves", {
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/hr/leaves`, {
         withCredentials: true,
       });
       const sortedLeaves = res.data.sort((a, b) => {
@@ -96,7 +96,7 @@ setLeaves(sortedLeaves);
     setApprovingLeaveId(id);
     try {
       const res = await axios.put(
-        `http://localhost:8000/api/hr/leaves/${id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/hr/leaves/${id}`,
         {
           action: "Approved",
           reviewer: {
@@ -123,7 +123,7 @@ setLeaves(sortedLeaves);
     setRejectingNowId(rejectingLeaveId);
     try {
       const res = await axios.put(
-        `http://localhost:8000/api/hr/leaves/${rejectingLeaveId}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/hr/leaves/${rejectingLeaveId}`,
         {
           action: "Rejected",
           reason: rejectionReason,

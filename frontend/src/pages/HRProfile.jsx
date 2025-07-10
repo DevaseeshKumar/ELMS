@@ -39,7 +39,7 @@ const HRProfile = () => {
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/hr/profile", {
+      const res = await fetch("${import.meta.env.VITE_API_BASE_URL}/api/hr/profile", {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Profile fetch failed");
@@ -58,7 +58,7 @@ const HRProfile = () => {
 
   const handleUpdate = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/hr/profile", {
+      const res = await fetch("${import.meta.env.VITE_API_BASE_URL}/api/hr/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -79,7 +79,7 @@ const HRProfile = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:8000/api/hr/profile", {
+      const res = await fetch("${import.meta.env.VITE_API_BASE_URL}/api/hr/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -108,7 +108,7 @@ const HRProfile = () => {
     formData.append("profileImage", file);
 
     try {
-      const res = await fetch("http://localhost:8000/api/hr/upload-profile-picture", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/hr/upload-profile-picture`, {
         method: "POST",
         credentials: "include",
         body: formData,
@@ -130,7 +130,7 @@ const HRProfile = () => {
 
   const handleRemoveProfilePicture = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/hr/remove-profile-picture", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/hr/remove-profile-picture`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -160,7 +160,7 @@ const HRProfile = () => {
           username={profile.username}
           imageUrl={
             profile.profileImage
-              ? `http://localhost:8000${profile.profileImage}?t=${Date.now()}`
+              ? `${import.meta.env.VITE_API_BASE_URL}${profile.profileImage}?t=${Date.now()}`
               : ""
           }
           size={100}

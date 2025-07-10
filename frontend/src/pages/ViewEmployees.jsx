@@ -51,7 +51,7 @@ const ViewEmployees = () => {
   };
 
   const fetchEmployees = async () => {
-    const res = await fetch("http://localhost:8000/api/admin/employees", {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/employees`, {
       credentials: "include",
     });
     if (!res.ok) throw new Error("Failed to fetch employees");
@@ -72,7 +72,7 @@ const ViewEmployees = () => {
   };
 
   const fetchLeaves = async () => {
-    const res = await fetch("http://localhost:8000/api/admin/leaves", {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/leaves`, {
       credentials: "include",
     });
     if (!res.ok) throw new Error("Failed to fetch leaves");
@@ -113,7 +113,7 @@ const ViewEmployees = () => {
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/employee/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/admin/employee/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -243,7 +243,7 @@ const ViewEmployees = () => {
                   <div className="flex items-center gap-4">
                     {emp.profileImage ? (
                       <img
-                        src={`http://localhost:8000${emp.profileImage}`}
+                        src={`${import.meta.env.VITE_API_BASE_URL}${emp.profileImage}`}
                         alt="Employee"
                         className="w-16 h-16 rounded-full object-cover border"
                       />

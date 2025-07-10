@@ -20,7 +20,7 @@ const UpdateHR = () => {
   useEffect(() => {
     const fetchHR = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/admin/hr/${hrId}`, {
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/admin/hr/${hrId}`, {
           withCredentials: true,
         });
         setForm({
@@ -50,7 +50,7 @@ const UpdateHR = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:8000/api/admin/hr/${hrId}`, form, {
+      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/admin/hr/${hrId}`, form, {
         withCredentials: true,
       });
       toast.success("HR updated successfully!", {
@@ -79,7 +79,7 @@ const UpdateHR = () => {
         {form.profileImage && (
           <div className="flex justify-center mb-4">
             <img
-              src={`http://localhost:8000${form.profileImage}?t=${Date.now()}`}
+              src={`${import.meta.env.VITE_API_BASE_URL}${form.profileImage}?t=${Date.now()}`}
               alt="Profile"
               className="w-24 h-24 rounded-full object-cover border"
             />

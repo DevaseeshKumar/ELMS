@@ -49,7 +49,7 @@ const EmployeeDashboard = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:8000/api/employee/logout", {}, { withCredentials: true });
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/employee/logout`, {}, { withCredentials: true });
       navigate("/employee/login");
     } catch (err) {
       console.error("Logout failed", err);
@@ -59,7 +59,7 @@ const EmployeeDashboard = () => {
   useEffect(() => {
     const fetchLeaveStats = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/employee/my-leaves", {
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/employee/my-leaves`, {
           withCredentials: true,
         });
         const leaves = res.data;

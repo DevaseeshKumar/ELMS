@@ -11,7 +11,7 @@ const ResetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`http://localhost:8000/api/admin/reset-password/${token}`, {
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/admin/reset-password/${token}`, {
         newPassword,
       });
       alert(res.data.message || "Password reset successfully");

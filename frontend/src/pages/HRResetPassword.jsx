@@ -25,7 +25,7 @@ const HRResetPassword = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post(`http://localhost:8000/api/hr/reset-password/${token}`, {
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/hr/reset-password/${token}`, {
         newPassword,
       });
 
