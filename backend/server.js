@@ -3,8 +3,16 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const session = require("express-session");
 require("dotenv").config();
+const path = require("path");
 
 const app = express();
+
+const isProduction = process.env.NODE_ENV === "production";
+
+// Trust proxy required for secure cookies (Render)
+if (isProduction) {
+  app.set("trust proxy", 1);
+}
 
 app.use(cors({
   origin: [
@@ -13,6 +21,7 @@ app.use(cors({
   ],
   credentials: true
 }));
+
 app.use(express.json());
 
 app.use(
@@ -22,18 +31,17 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: 10 * 60 * 1000,
-      secure: true,         // ✅ Enable secure cookies for HTTPS
+      secure: isProduction,
       httpOnly: true,
-      sameSite: "none"      // ✅ Required for frontend-backend on different domains
+      sameSite: isProduction ? "none" : "lax"
     },
   })
 );
 
 app.use("/uploads", express.static("uploads"));
-const path = require("path");
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// ✅ Connect MongoDB
+// ✅ MongoDB connection
 mongoose.connect(process.env.mongodburl, {
   useNewUrlParser: true,
   useUnifiedTopology: true
@@ -51,14 +59,13 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/hr', hrRoutes);
 app.use("/api/employee", employeeRoutes);
 app.use("/api/contact", contactRoutes);
-// app.get("/", (req, res) => {
-//   res.sendFile(path.join(__dirname, "loader.html"));
-// });
+
+// Optional landing page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
