@@ -15,20 +15,20 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// ✅ Session middleware MUST come before routes
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "your_default_secret",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 10 * 60 * 1000, // 10 minutes
-      secure: false,          // true only in production with HTTPS
+      maxAge: 10 * 60 * 1000,
+      secure: true,         // ✅ Enable secure cookies for HTTPS
       httpOnly: true,
-      sameSite: "lax",        // ✅ add this to allow cross-origin cookie sharing
+      sameSite: "none"      // ✅ Required for frontend-backend on different domains
     },
   })
 );
+
 app.use("/uploads", express.static("uploads"));
 const path = require("path");
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
