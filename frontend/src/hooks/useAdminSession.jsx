@@ -8,7 +8,7 @@ export const useAdminSession = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/admin/me", { withCredentials: true })
+      .get(`${import.meta.env.VITE_API_BASE_URL}/api/admin/me`, { withCredentials: true })
       .then((res) => setAdmin(res.data))
       .catch(() => setAdmin(null))
       .finally(() => setLoading(false));

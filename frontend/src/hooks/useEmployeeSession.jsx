@@ -6,7 +6,7 @@ export const useEmployeeSession = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/employee/me", {
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/employee/me`, {
       withCredentials: true
     })
     .then((res) => setEmployee(res.data))

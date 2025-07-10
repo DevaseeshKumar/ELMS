@@ -10,7 +10,7 @@ export const useHRSession = () => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/hr/profile", {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/hr/profile`, {
           credentials: "include",
         });
 
