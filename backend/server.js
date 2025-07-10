@@ -7,7 +7,10 @@ require("dotenv").config();
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: [
+    "http://localhost:5173",
+    "https://employee-leave-management-system.onrender.com"
+  ],
   credentials: true
 }));
 app.use(express.json());
