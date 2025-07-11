@@ -17,7 +17,7 @@ if (isProduction) {
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "https://employee-leave-management-system.onrender.com"
+    "https://employeeleavemanagementsys.netlify.app"
   ],
   credentials: true
 }));
