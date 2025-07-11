@@ -160,14 +160,15 @@ const ViewEmployeesHR = () => {
                   >
                     <div className="flex items-center space-x-4 mb-4">
                       <img
-                        src={
-                          emp.profileImage
-                            ? `http://${import.meta.env.VITE_API_BASE_URL}${emp.profileImage}`
-                            : "https://via.placeholder.com/48"
-                        }
-                        alt="Profile"
-                        className="w-16 h-16 rounded-full object-cover border"
-                      />
+  src={
+    emp.profileImage
+      ? `${import.meta.env.VITE_API_BASE_URL}${emp.profileImage}`
+      : "https://via.placeholder.com/48"
+  }
+  alt="Profile"
+  className="w-16 h-16 rounded-full object-cover border"
+/>
+
                       <div>
                         <h3 className="text-xl font-semibold text-gray-800">
                           {emp.username}
