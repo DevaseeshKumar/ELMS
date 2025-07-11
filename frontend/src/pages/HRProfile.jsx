@@ -39,7 +39,7 @@ const HRProfile = () => {
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch("${import.meta.env.VITE_API_BASE_URL}/api/hr/profile", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/hr/profile`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Profile fetch failed");
@@ -58,7 +58,7 @@ const HRProfile = () => {
 
   const handleUpdate = async () => {
     try {
-      const res = await fetch("${import.meta.env.VITE_API_BASE_URL}/api/hr/profile", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/hr/profile`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
