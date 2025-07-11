@@ -56,7 +56,7 @@ const AdminHRApproval = () => {
   const handleAction = async (hrId, approve) => {
     try {
       const res = await axios.put(
-        `${import.meta.env.VITE_API_BASE_URL}/api//admin/hr-status/${hrId}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/admin/hr-status/${hrId}`,
         { approve },
         { withCredentials: true }
       );
