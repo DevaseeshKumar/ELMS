@@ -42,8 +42,8 @@ import EmployeeProfile from "./pages/EmployeeProfile";
 import UpdateProfile from "./pages/UpdateProfile";
 
 // Support Pages
-import EmailSupport from './pages/EmailSupport';
-import ReportBug from './pages/ReportBug';
+import EmailSupport from "./pages/EmailSupport";
+import ReportBug from "./pages/ReportBug";
 import Support from "./pages/Support";
 import Help from "./pages/Help";
 
@@ -59,8 +59,7 @@ export default function App() {
           {/* Admin Auth & Dashboard */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password/:token" element={<ResetPassword />} />
-          <Route path="/login/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/admin/reset-password/:token" element={<ResetPassword />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/hr-approvals" element={<AdminHRApproval />} />
           <Route path="/admin/leave-decision/:leaveId" element={<ManageLeaves />} />
