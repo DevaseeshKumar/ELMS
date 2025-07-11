@@ -42,7 +42,7 @@ const HrNavbar = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:8000/api/hr/logout", {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/hr/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -98,7 +98,7 @@ const HrNavbar = () => {
               onClick={() => setDropdownOpen((prev) => !prev)}
               src={
                 hr?.profileImage
-                  ? `http://localhost:8000${hr.profileImage}?t=${Date.now()}`
+                  ? `${import.meta.env.VITE_API_BASE_URL}${hr.profileImage}?t=${Date.now()}`
                   : `https://ui-avatars.com/api/?name=${hr?.username || "H"}&background=9333EA&color=fff`
               }
               alt="HR Avatar"
