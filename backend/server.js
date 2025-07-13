@@ -81,7 +81,8 @@ app.use("/api/contact", contactRoutes);
 
 // ✅ Optional landing route
 app.get("/", (req, res) => {
-  res.send("ELMS Backend is running.");
+  // res.send("ELMS Backend is running.");
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // ✅ Start server
