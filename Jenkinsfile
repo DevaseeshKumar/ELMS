@@ -4,35 +4,35 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        git url: 'https://github.com/DevaseeshKumar/ELMS.git', branch: 'main'
+        git branch: 'main', url: 'https://github.com/DevaseeshKumar/ELMS.git'
       }
     }
 
     stage('Build Dev Containers') {
       steps {
-        sh 'docker-compose build'
+        bat 'docker-compose build'
       }
     }
 
     stage('Run Dev Containers') {
       steps {
-        sh 'docker-compose up -d'
+        bat 'docker-compose up -d'
       }
     }
 
     stage('Verify') {
       steps {
-        sh 'docker ps'
+        bat 'docker ps'
       }
     }
   }
 
   post {
     success {
-      echo '✅ Development environment is running!'
+      echo '✅ Pipeline executed successfully!'
     }
     failure {
-      echo '❌ Something went wrong.'
+      echo '❌ Pipeline failed. Please check logs.'
     }
   }
 }
