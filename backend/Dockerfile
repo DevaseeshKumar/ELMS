@@ -8,4 +8,5 @@ RUN npm install
 COPY . .
 
 EXPOSE 8000
-CMD ["npm", "start"]
+
+CMD ["npx", "nodemon", "server.js"]
