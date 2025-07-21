@@ -5,8 +5,8 @@ services:
     build: ./backend
     ports:
       - "8000:8000"
-    environment:
-      - MONGO_URI=mongodb+srv://ELMS:ELMS@cluster0.uqtzdbr.mongodb.net/elms?retryWrites=true&w=majority&appName=Cluster0
+    env_file:
+      - .env
     restart: always
 
   frontend:
