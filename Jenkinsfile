@@ -2,29 +2,47 @@ pipeline {
     agent any
 
     environment {
-        COMPOSE_PROJECT_NAME = "elms"  // Optional: avoids container name collisions
+        // MongoDB
+        MONGODB_URL = 'mongodb+srv://ELMS:ELMS@cluster0.uqtzdbr.mongodb.net/elms?retryWrites=true&w=majority&appName=Cluster0'
+        
+        // Email
+        EMAIL_USER = 'thorodinsonuru@gmail.com'
+        EMAIL_PASS = 'qzerfjxnvoeupsgp'
+
+        // Server config
+        PORT = '8000'
+        FRONTEND_URL = 'https://employeeleavemanagementsys.netlify.app'
+        SESSION_SECRET = 'elms-secret-key'
+        NODE_ENV = 'production'
     }
 
     stages {
-        stage('Clean Workspace') {
+        stage('Checkout') {
             steps {
-                cleanWs()
+                git branch: 'main', url: 'https://github.com/your-repo/elms.git'
             }
         }
 
-        stage('Clone Repository') {
+        stage('Write .env') {
             steps {
-                checkout scm
+                script {
+                    writeFile file: '.env', text: """
+                    mongodburl=${env.MONGODB_URL}
+                    EMAIL_USER=${env.EMAIL_USER}
+                    EMAIL_PASS=${env.EMAIL_PASS}
+                    PORT=${env.PORT}
+                    FRONTEND_URL=${env.FRONTEND_URL}
+                    SESSION_SECRET=${env.SESSION_SECRET}
+                    NODE_ENV=${env.NODE_ENV}
+                    """
+                }
             }
         }
 
         stage('Build & Deploy') {
             steps {
-                script {
-                    // Ensure Docker is available and compose works
-                    bat 'docker-compose down'
-                    bat 'docker-compose up -d --build'
-                }
+                bat "docker-compose down"
+                bat "docker-compose up -d --build"
             }
         }
     }
@@ -35,7 +53,7 @@ pipeline {
             cleanWs()
         }
         success {
-            echo '✅ Deployment successful.'
+            echo '✅ Deployed successfully!'
         }
     }
 }
