@@ -1,4 +1,5 @@
-FROM node:18-bullseye-slim
+# Use an official Node runtime as a parent image
+FROM node:20
 
 WORKDIR /app
 
@@ -10,4 +11,4 @@ COPY . .
 
 EXPOSE 5173
 
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+CMD ["npm", "run", "dev"]
