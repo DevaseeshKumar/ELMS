@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        // Your environment variables
         DOCKER_IMAGE_NAME = 'elms-app'
     }
 
@@ -15,19 +14,33 @@ pipeline {
 
         stage('Write .env') {
             steps {
-                writeFile file: '.env', text: """
+                writeFile file: '.env', text: '''\
+mongodburl=mongodb+srv://ELMS:ELMS@cluster0.uqtzdbr.mongodb.net/elms?retryWrites=true&w=majority&appName=Cluster0
 PORT=8000
-DB_URL=mongodb+srv://ELMS:ELMS@cluster0.uqtzdbr.mongodb.net/elms?retryWrites=true&w=majority&appName=Cluster0
 EMAIL_USER=thorodinsonuru@gmail.com
 EMAIL_PASS=qzerfjxnvoeupsgp
-"""
+FRONTEND_URL=https://employeeleavemanagementsys.netlify.app
+SESSION_SECRET=elms-secret-key
+NODE_ENV=production
+'''
             }
         }
 
         stage('Build & Deploy') {
             steps {
-                sh 'docker compose -f docker-compose.yml down'
-                sh 'docker compose -f docker-compose.yml up --build -d'
+                script {
+                    def isWindows = isUnix() == false
+                    def downCmd = 'docker compose -f docker-compose.yml down || exit 0'
+                    def upCmd = 'docker compose -f docker-compose.yml up --build -d'
+
+                    if (isWindows) {
+                        bat downCmd
+                        bat upCmd
+                    } else {
+                        sh downCmd
+                        sh upCmd
+                    }
+                }
             }
         }
     }
