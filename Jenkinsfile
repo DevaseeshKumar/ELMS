@@ -1,10 +1,22 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_BUILDKIT = 1
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/DevaseeshKumar/ELMS.git'
+            }
+        }
+
+        stage('Inject .env File') {
+            steps {
+                withCredentials([string(credentialsId: 'mern-env', variable: 'BACKEND_ENV')]) {
+                    writeFile file: '.env', text: "${BACKEND_ENV}"
+                }
             }
         }
 
@@ -15,15 +27,7 @@ pipeline {
             }
         }
 
-        stage('Inject .env for Backend') {
-            steps {
-                withCredentials([string(credentialsId: 'mern-env', variable: 'ENV_CONTENT')]) {
-                    writeFile file: 'backend/.env', text: ENV_CONTENT
-                }
-            }
-        }
-
-        stage('Build Backend Image') {
+        stage('Install Backend Dependencies') {
             steps {
                 dir('backend') {
                     bat 'npm install'
@@ -31,7 +35,7 @@ pipeline {
             }
         }
 
-        stage('Build Frontend Image') {
+        stage('Install Frontend Dependencies') {
             steps {
                 dir('frontend') {
                     bat 'npm install'
@@ -39,11 +43,11 @@ pipeline {
             }
         }
 
-        stage('Start MERN App with Docker Compose') {
+        stage('Start MERN Stack with Docker Compose') {
             steps {
                 bat 'docker-compose down'
                 bat 'docker-compose up -d --build'
-                bat 'docker-compose logs'
+                bat 'docker-compose logs --tail=50'
             }
         }
     }
@@ -53,7 +57,7 @@ pipeline {
             echo '✅ MERN Stack Deployed Successfully!'
         }
         failure {
-            echo '❌ Pipeline failed. Please check the Jenkins logs.'
+            echo '❌ Pipeline failed. Check Jenkins logs.'
         }
         cleanup {
             cleanWs()
