@@ -17,9 +17,9 @@ pipeline {
             steps {
                 writeFile file: '.env', text: """
 PORT=8000
-DB_URL=mongodb+srv://<username>:<password>@cluster.mongodb.net/elms?retryWrites=true&w=majority
-EMAIL_USER=youremail@example.com
-EMAIL_PASS=yourpassword
+DB_URL=mongodb+srv://ELMS:ELMS@cluster0.uqtzdbr.mongodb.net/elms?retryWrites=true&w=majority&appName=Cluster0
+EMAIL_USER=thorodinsonuru@gmail.com
+EMAIL_PASS=qzerfjxnvoeupsgp
 """
             }
         }
