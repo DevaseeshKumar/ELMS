@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git credentialsId: 'your-github-credentials-id', url: 'https://github.com/thorodinsonuru/ELMS.git', branch: 'main'
+                git credentialsId: 'your-github-credentials-id', url: 'https://github.com/DevaseeshKumar/ELMS.git', branch: 'main'
             }
         }
 
