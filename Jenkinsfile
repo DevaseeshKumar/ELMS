@@ -2,65 +2,40 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_BUILDKIT = 1
+        COMPOSE_PROJECT_NAME = "elms"  // Optional: avoids container name collisions
     }
 
     stages {
-        stage('Checkout') {
+        stage('Clean Workspace') {
             steps {
-                git branch: 'main', url: 'https://github.com/DevaseeshKumar/ELMS.git'
+                cleanWs()
             }
         }
 
-        stage('Inject .env File') {
+        stage('Clone Repository') {
             steps {
-                withCredentials([string(credentialsId: 'mern-env', variable: 'BACKEND_ENV')]) {
-                    writeFile file: '.env', text: "${BACKEND_ENV}"
+                checkout scm
+            }
+        }
+
+        stage('Build & Deploy') {
+            steps {
+                script {
+                    // Ensure Docker is available and compose works
+                    bat 'docker-compose down'
+                    bat 'docker-compose up -d --build'
                 }
-            }
-        }
-
-        stage('Verify Docker Installation') {
-            steps {
-                bat 'docker --version'
-                bat 'docker-compose --version'
-            }
-        }
-
-        stage('Install Backend Dependencies') {
-            steps {
-                dir('backend') {
-                    bat 'npm install'
-                }
-            }
-        }
-
-        stage('Install Frontend Dependencies') {
-            steps {
-                dir('frontend') {
-                    bat 'npm install'
-                }
-            }
-        }
-
-        stage('Start MERN Stack with Docker Compose') {
-            steps {
-                bat 'docker-compose down'
-                bat 'docker-compose up -d --build'
-                bat 'docker-compose logs --tail=50'
             }
         }
     }
 
     post {
-        success {
-            echo '✅ MERN Stack Deployed Successfully!'
-        }
         failure {
             echo '❌ Pipeline failed. Check Jenkins logs.'
-        }
-        cleanup {
             cleanWs()
+        }
+        success {
+            echo '✅ Deployment successful.'
         }
     }
 }
