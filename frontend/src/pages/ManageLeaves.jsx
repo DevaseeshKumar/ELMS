@@ -52,19 +52,25 @@ const [locationInfo, setLocationInfo] = useState(null);
   };
 
   const fetchLeaves = async () => {
-    try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/leaves`, {
-        withCredentials: true,
-      });
+  try {
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/leaves`, {
+      withCredentials: true,
+    });
 
-      const sortedLeaves = res.data.sort((a, b) => {
-        const statusOrder = { Pending: 0, Approved: 1, Rejected: 2 };
-        const statusCompare = statusOrder[a.status] - statusOrder[b.status];
-        if (statusCompare !== 0) return statusCompare;
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      });
+    console.log("Leaves API Response:", res.data); // 👀 Inspect this
 
-      setLeaves(sortedLeaves);
+    const rawLeaves = Array.isArray(res.data)
+      ? res.data
+      : res.data.leaves || res.data.data || [];
+
+    const sortedLeaves = rawLeaves.sort((a, b) => {
+      const statusOrder = { Pending: 0, Approved: 1, Rejected: 2 };
+      const statusCompare = statusOrder[a.status] - statusOrder[b.status];
+      if (statusCompare !== 0) return statusCompare;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+
+    setLeaves(sortedLeaves);
 
       const empMap = {};
       sortedLeaves.forEach((leave) => {
