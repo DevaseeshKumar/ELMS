@@ -296,6 +296,7 @@ const [qrTimestamp, setQrTimestamp] = useState(null);
           email: qrHR.email,
           phone: qrHR.phone,
           department: qrHR.department,
+          time : qrTimestamp,
         })}
         size={150}
         className="mx-auto"
