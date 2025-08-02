@@ -8,6 +8,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { FaUsers } from "react-icons/fa";
 import "react-toastify/dist/ReactToastify.css";
 import Footer from "../components/Footer";
+import QRCode from "react-qr-code";
 
 const ViewHRs = () => {
   const { admin, loading } = useAdminSession();
@@ -19,6 +20,7 @@ const ViewHRs = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedHR, setSelectedHR] = useState(null);
+   const [qrHR, setQrHR] = useState(null); // 👈 New QR Modal state
 
   useEffect(() => {
     if (!loading && !admin) {
@@ -264,7 +266,34 @@ const ViewHRs = () => {
           </div>
         </div>
       )}
-      
+       {/* QR Code Modal */}
+        {qrHR && (
+          <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white p-6 rounded-lg shadow-lg relative w-[300px] text-center">
+              <button
+                onClick={() => setQrHR(null)}
+                className="absolute top-2 right-3 text-gray-600 hover:text-black text-2xl"
+              >
+                &times;
+              </button>
+              <h2 className="text-lg font-semibold mb-4">
+                QR Code for {qrHR.username}
+              </h2>
+              <QRCode
+                value={JSON.stringify({
+                  username: qrHR.username,
+                  email: qrHR.email,
+                  phone: qrHR.phone,
+                  department: qrHR.department,
+                })}
+                size={200}
+                bgColor="#ffffff"
+                fgColor="#000000"
+                level="H"
+              />
+            </div>
+          </div>
+        )}
     </div>
     <Footer />
     </>
