@@ -20,7 +20,9 @@ const ViewHRs = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedHR, setSelectedHR] = useState(null);
-   const [qrHR, setQrHR] = useState(null); // 👈 New QR Modal state
+  const [qrHR, setQrHR] = useState(null);
+const [qrTimestamp, setQrTimestamp] = useState(null);
+
 
   useEffect(() => {
     if (!loading && !admin) {
@@ -229,11 +231,15 @@ const ViewHRs = () => {
     Delete
   </button>
   <button
-    onClick={() => setQrHR(hr)}
-    className="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded-md shadow-md font-semibold"
-  >
-    Show QR
-  </button>
+  onClick={() => {
+    setQrHR(hr);
+    setQrTimestamp(new Date().toLocaleString());
+  }}
+  className="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded-md shadow-md font-semibold"
+>
+  Show QR
+</button>
+
 </div>
 
               </div>
@@ -273,34 +279,32 @@ const ViewHRs = () => {
           </div>
         </div>
       )}
-       {/* QR Code Modal */}
-        {qrHR && (
-          <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white p-6 rounded-lg shadow-lg relative w-[300px] text-center">
-              <button
-                onClick={() => setQrHR(null)}
-                className="absolute top-2 right-3 text-gray-600 hover:text-black text-2xl"
-              >
-                &times;
-              </button>
-              <h2 className="text-lg font-semibold mb-4">
-                QR Code for {qrHR.username}
-              </h2>
-              <QRCode
-                value={JSON.stringify({
-                  username: qrHR.username,
-                  email: qrHR.email,
-                  phone: qrHR.phone,
-                  department: qrHR.department,
-                })}
-                size={200}
-                bgColor="#ffffff"
-                fgColor="#000000"
-                level="H"
-              />
-            </div>
-          </div>
-        )}
+      {/* ✅ QR Code Modal */}
+{qrHR && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-80 relative text-center">
+      <button
+        onClick={() => setQrHR(null)}
+        className="absolute top-2 right-3 text-gray-600 hover:text-black text-2xl"
+      >
+        &times;
+      </button>
+      <h2 className="text-lg font-bold mb-4">QR Code for {qrHR.username}</h2>
+      <QRCode
+        value={JSON.stringify({
+          username: qrHR.username,
+          email: qrHR.email,
+          phone: qrHR.phone,
+          department: qrHR.department,
+        })}
+        size={150}
+        className="mx-auto"
+      />
+      <p className="text-xs mt-3 text-gray-500">Generated: {qrTimestamp}</p>
+    </div>
+  </div>
+)}
+
     </div>
     <Footer />
     </>
