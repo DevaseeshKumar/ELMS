@@ -8,6 +8,8 @@ import { ToastContainer, toast } from "react-toastify";
 import { FaUserTie } from "react-icons/fa"; // ✅ Added employee icon
 import "react-toastify/dist/ReactToastify.css";
 import Footer from "../components/Footer";
+import QRCode from "react-qr-code";
+
 
 const ViewEmployees = () => {
   const { admin, loading } = useAdminSession();
@@ -16,6 +18,9 @@ const ViewEmployees = () => {
   const [employeeCount, setEmployeeCount] = useState(0);
   const [leavesByEmployee, setLeavesByEmployee] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+const [qrEmployee, setQrEmployee] = useState(null);
+const [qrTimestamp, setQrTimestamp] = useState(null);
+
 
   useEffect(() => {
     if (!loading && !admin) {
@@ -279,12 +284,50 @@ const ViewEmployees = () => {
                     >
                       Delete
                     </button>
+                    <button
+  onClick={() => {
+    setQrEmployee(emp);
+    setQrTimestamp(new Date().toLocaleString());
+  }}
+  className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+>
+  Show QR
+</button>
                   </div>
                 </div>
               );
             })}
           </div>
         )}
+        {qrEmployee && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-80 relative text-center">
+      <button
+        onClick={() => setQrEmployee(null)}
+        className="absolute top-2 right-3 text-gray-600 hover:text-black text-2xl"
+      >
+        &times;
+      </button>
+      <h2 className="text-lg font-bold mb-4">QR Code for {qrEmployee.username}</h2>
+      <QRCode
+        value={JSON.stringify({
+          username: qrEmployee.username,
+          employeeId: qrEmployee.employeeId,
+          email: qrEmployee.email,
+          phone: qrEmployee.phone,
+          gender: qrEmployee.gender,
+          department: qrEmployee.department,
+          profileLink: `http://localhost:8000/employee/${qrEmployee._id}`,
+          generatedAt: qrTimestamp,
+        }, null, 2)}
+        size={150}
+        className="mx-auto"
+      />
+      <p className="text-xs mt-3 text-gray-500">Generated: {qrTimestamp}</p>
+    </div>
+  </div>
+)}
+
       </div>
       <Footer />
     </div>
