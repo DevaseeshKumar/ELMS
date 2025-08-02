@@ -213,22 +213,29 @@ const ViewHRs = () => {
                 </div>
 
                 <div className="mt-6 flex justify-end gap-3">
-                  <button
-                    onClick={() => updateHR(hr._id)}
-                    className="bg-yellow-500 hover:bg-yellow-600 transition text-white px-4 py-2 rounded-md shadow-md font-semibold"
-                  >
-                    Update
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSelectedHR(hr);
-                      setShowModal(true);
-                    }}
-                    className="bg-red-600 hover:bg-red-700 transition text-white px-4 py-2 rounded-md shadow-md font-semibold"
-                  >
-                    Delete
-                  </button>
-                </div>
+  <button
+    onClick={() => updateHR(hr._id)}
+    className="bg-yellow-500 hover:bg-yellow-600 transition text-white px-4 py-2 rounded-md shadow-md font-semibold"
+  >
+    Update
+  </button>
+  <button
+    onClick={() => {
+      setSelectedHR(hr);
+      setShowModal(true);
+    }}
+    className="bg-red-600 hover:bg-red-700 transition text-white px-4 py-2 rounded-md shadow-md font-semibold"
+  >
+    Delete
+  </button>
+  <button
+    onClick={() => setQrHR(hr)}
+    className="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-2 rounded-md shadow-md font-semibold"
+  >
+    Show QR
+  </button>
+</div>
+
               </div>
             ))}
           </div>
