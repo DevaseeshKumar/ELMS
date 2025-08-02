@@ -317,7 +317,7 @@ const [qrTimestamp, setQrTimestamp] = useState(null);
           phone: qrEmployee.phone,
           gender: qrEmployee.gender,
           department: qrEmployee.department,
-          profileLink: `http://localhost:8000/employee/${qrEmployee._id}`,
+          
           generatedAt: qrTimestamp,
         }, null, 2)}
         size={150}
