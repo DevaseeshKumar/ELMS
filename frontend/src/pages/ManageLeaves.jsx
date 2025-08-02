@@ -20,6 +20,7 @@ const ManageLeaves = () => {
   const [rejectingNowId, setRejectingNowId] = useState(null);
   const [mapLocation, setMapLocation] = useState(null);
 
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
   useEffect(() => {
     if (!loading && !admin) {
@@ -49,22 +50,20 @@ const ManageLeaves = () => {
 
   const fetchLeaves = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/admin/leaves`, {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL}/api/admin/leaves`,
+        { withCredentials: true }
+      );
 
       const sortedLeaves = res.data.sort((a, b) => {
-  // 1. Prioritize "Pending" > "Approved" > "Rejected"
-  const statusOrder = { Pending: 0, Approved: 1, Rejected: 2 };
-  const statusCompare = statusOrder[a.status] - statusOrder[b.status];
+        const statusOrder = { Pending: 0, Approved: 1, Rejected: 2 };
+        const statusCompare = statusOrder[a.status] - statusOrder[b.status];
+        return statusCompare !== 0
+          ? statusCompare
+          : new Date(b.createdAt) - new Date(a.createdAt);
+      });
 
-  if (statusCompare !== 0) return statusCompare;
-
-  // 2. If same status, sort by newest createdAt first
-  return new Date(b.createdAt) - new Date(a.createdAt);
-});
-
-setLeaves(sortedLeaves);
+      setLeaves(sortedLeaves);
 
       const empMap = {};
       sortedLeaves.forEach((leave) => {
@@ -184,15 +183,9 @@ setLeaves(sortedLeaves);
                     {new Date(leave.startDate).toLocaleDateString()} -{" "}
                     {new Date(leave.endDate).toLocaleDateString()}
                   </div>
-                  <p className="text-sm">
-                    <strong>Type:</strong> {leave.leaveType}
-                  </p>
-                  <p className="text-sm">
-                    <strong>Reason:</strong> {leave.reason || "N/A"}
-                  </p>
-                  <p className="text-sm">
-                    <strong>Status:</strong> {leave.status}
-                  </p>
+                  <p className="text-sm"><strong>Type:</strong> {leave.leaveType}</p>
+                  <p className="text-sm"><strong>Reason:</strong> {leave.reason || "N/A"}</p>
+                  <p className="text-sm"><strong>Status:</strong> {leave.status}</p>
                   <p className="text-sm">
                     <strong>Reviewed By:</strong>{" "}
                     {leave.reviewedBy?.username
@@ -213,63 +206,57 @@ setLeaves(sortedLeaves);
                     {empLeaves.casualDays.size} days
                   </p>
 
-                  <div className="flex flex-col gap-2 mt-2">
-  <div className="flex gap-2">
-    <button
-      disabled={
-        leave.status !== "Pending" ||
-        approvingLeaveId === leave._id
-      }
-      onClick={() => handleApprove(leave._id)}
-      className={`flex-1 px-3 py-1 text-white rounded ${
-        leave.status !== "Pending"
-          ? "bg-gray-400"
-          : "bg-green-600 hover:bg-green-700"
-      } flex items-center justify-center`}
-    >
-      {approvingLeaveId === leave._id ? (
-        <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
-      ) : (
-        "Approve"
-      )}
-    </button>
+                  {leave.location?.latitude && leave.location?.longitude && (
+                    <button
+                      onClick={() =>
+                        setMapLocation({
+                          latitude: leave.location.latitude,
+                          longitude: leave.location.longitude,
+                        })
+                      }
+                      className="mt-2 text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
+                    >
+                      View Location
+                    </button>
+                  )}
 
-    <button
-      disabled={
-        leave.status !== "Pending" ||
-        rejectingNowId === leave._id
-      }
-      onClick={() => setRejectingLeaveId(leave._id)}
-      className={`flex-1 px-3 py-1 text-white rounded ${
-        leave.status !== "Pending"
-          ? "bg-gray-400"
-          : "bg-red-600 hover:bg-red-700"
-      } flex items-center justify-center`}
-    >
-      {rejectingNowId === leave._id ? (
-        <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
-      ) : (
-        "Reject"
-      )}
-    </button>
-  </div>
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      disabled={
+                        leave.status !== "Pending" || approvingLeaveId === leave._id
+                      }
+                      onClick={() => handleApprove(leave._id)}
+                      className={`flex-1 px-3 py-1 text-white rounded ${
+                        leave.status !== "Pending"
+                          ? "bg-gray-400"
+                          : "bg-green-600 hover:bg-green-700"
+                      } flex items-center justify-center`}
+                    >
+                      {approvingLeaveId === leave._id ? (
+                        <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
+                      ) : (
+                        "Approve"
+                      )}
+                    </button>
 
-  {leave.location?.latitude && leave.location?.longitude && (
-  <button
-    onClick={() =>
-      setMapLocation({
-        latitude: leave.location.latitude,
-        longitude: leave.location.longitude,
-      })
-    }
-    className="mt-2 w-full px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded"
-  >
-    View Location
-  </button>
-)}
-
-</div>
-
+                    <button
+                      disabled={
+                        leave.status !== "Pending" || rejectingNowId === leave._id
+                      }
+                      onClick={() => setRejectingLeaveId(leave._id)}
+                      className={`flex-1 px-3 py-1 text-white rounded ${
+                        leave.status !== "Pending"
+                          ? "bg-gray-400"
+                          : "bg-red-600 hover:bg-red-700"
+                      } flex items-center justify-center`}
+                    >
+                      {rejectingNowId === leave._id ? (
+                        <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
+                      ) : (
+                        "Reject"
+                      )}
+                    </button>
+                  </div>
                 </div>
               );
             })}
@@ -309,14 +296,15 @@ setLeaves(sortedLeaves);
             </div>
           </div>
         )}
-      </div>
-      {mapLocation && (
-  <MapModal
-    location={mapLocation}
-    onClose={() => setMapLocation(null)}
-  />
-)}
 
+        {mapLocation && (
+          <MapModal
+            location={mapLocation}
+            onClose={() => setMapLocation(null)}
+            apiKey={apiKey}
+          />
+        )}
+      </div>
       <Footer />
     </div>
   );
