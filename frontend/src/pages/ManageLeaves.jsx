@@ -255,18 +255,19 @@ setLeaves(sortedLeaves);
   </div>
 
   {leave.location?.latitude && leave.location?.longitude && (
-    <button
-      onClick={() =>
-        setMapLocation({
-          latitude: leave.location.latitude,
-          longitude: leave.location.longitude,
-        })
-      }
-      className="mt-2 w-full px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded"
-    >
-      View Location
-    </button>
-  )}
+  <button
+    onClick={() =>
+      setMapLocation({
+        latitude: leave.location.latitude,
+        longitude: leave.location.longitude,
+      })
+    }
+    className="mt-2 w-full px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded"
+  >
+    View Location
+  </button>
+)}
+
 </div>
 
                 </div>
