@@ -13,26 +13,13 @@ const ApplyLeave = () => {
   const location = useLocation();
 
   const [form, setForm] = useState({
-  employeeId: "",
-  startDate: "",
-  endDate: "",
-  leaveType: "",
-  reason: "",
-  latitude: "",
-  longitude: "",
-  ipAddress: "",
-});
+    employeeId: "",
+    startDate: "",
+    endDate: "",
+    leaveType: "",
+    reason: "",
+  });
 
-const fetchIPAddress = async () => {
-  try {
-    const response = await fetch("https://api64.ipify.org?format=json");
-    const data = await response.json();
-    setForm((prev) => ({ ...prev, ipAddress: data.ip }));
-  } catch (error) {
-    console.error("Failed to fetch IP address:", error);
-    toast.warn("Unable to fetch IP address.");
-  }
-};
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -44,19 +31,6 @@ const fetchIPAddress = async () => {
       });
     }
   }, [location.state]);
-useEffect(() => {
-  if (!loading) {
-    if (!employee) {
-      navigate("/employee/login", {
-        state: { message: "Session expired. Please login again." },
-      });
-    } else {
-      setForm((prev) => ({ ...prev, employeeId: employee.employeeId }));
-      getCurrentLocation();
-      fetchIPAddress(); // ← fetch IP here
-    }
-  }
-}, [employee, loading, navigate]);
 
   useEffect(() => {
     if (!loading) {
@@ -66,29 +40,9 @@ useEffect(() => {
         });
       } else {
         setForm((prev) => ({ ...prev, employeeId: employee.employeeId }));
-        getCurrentLocation();
       }
     }
   }, [employee, loading, navigate]);
-
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setForm((prev) => ({
-            ...prev,
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          }));
-        },
-        (error) => {
-          toast.warn("Location access denied. Location won't be stored.");
-        }
-      );
-    } else {
-      toast.error("Geolocation not supported by this browser.");
-    }
-  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -97,7 +51,8 @@ useEffect(() => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (new Date(form.startDate) > new Date(form.endDate)) {
+    const { startDate, endDate } = form;
+    if (new Date(startDate) > new Date(endDate)) {
       return toast.error("End date must be after start date.");
     }
 
@@ -105,7 +60,7 @@ useEffect(() => {
 
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/employee/apply-leave`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/employee/apply-leave`,
         form,
         { withCredentials: true }
       );
@@ -117,8 +72,6 @@ useEffect(() => {
         endDate: "",
         leaveType: "",
         reason: "",
-        latitude: "",
-        longitude: "",
       });
     } catch (err) {
       toast.error(err.response?.data?.message || "Leave application failed.");
@@ -134,7 +87,12 @@ useEffect(() => {
     <div>
       <EmployeeNavbar onLogout={() => navigate("/employee/login")} />
 
-      <ToastContainer position="top-right" autoClose={3000} pauseOnHover theme="colored" />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        pauseOnHover
+        theme="colored"
+      />
 
       <div className="max-w-md mx-auto mt-12 p-6 bg-white shadow-xl rounded-xl animate-fade-in transition">
         <h2 className="text-2xl font-bold mb-6 text-center text-cyan-700">Apply for Leave</h2>
@@ -204,22 +162,21 @@ useEffect(() => {
             />
           </div>
 
-          {/* Hidden latitude & longitude */}
-          <input type="hidden" name="latitude" value={form.latitude} />
-          <input type="hidden" name="longitude" value={form.longitude} />
-          <input type="hidden" name="ipAddress" value={form.ipAddress} />
-
-
           <button
             type="submit"
             disabled={submitting}
             className={`w-full flex items-center justify-center text-white p-2 rounded transition ${
-              submitting ? "bg-cyan-400 cursor-not-allowed" : "bg-cyan-600 hover:bg-cyan-700"
+              submitting
+                ? "bg-cyan-400 cursor-not-allowed"
+                : "bg-cyan-600 hover:bg-cyan-700"
             }`}
           >
             {submitting ? (
               <>
-                <svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
+                <svg
+                  className="animate-spin h-5 w-5 mr-2 text-white"
+                  viewBox="0 0 24 24"
+                >
                   <circle
                     className="opacity-25"
                     cx="12"
@@ -243,7 +200,6 @@ useEffect(() => {
           </button>
         </form>
       </div>
-
       <Footer />
     </div>
   );
