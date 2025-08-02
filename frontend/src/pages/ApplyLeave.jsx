@@ -13,16 +13,26 @@ const ApplyLeave = () => {
   const location = useLocation();
 
   const [form, setForm] = useState({
-    employeeId: "",
-    startDate: "",
-    endDate: "",
-    leaveType: "",
-    reason: "",
-    latitude: "",
-    longitude: "",
-    ipAddress: "",
-  });
+  employeeId: "",
+  startDate: "",
+  endDate: "",
+  leaveType: "",
+  reason: "",
+  latitude: "",
+  longitude: "",
+  ipAddress: "",
+});
 
+const fetchIPAddress = async () => {
+  try {
+    const response = await fetch("https://api64.ipify.org?format=json");
+    const data = await response.json();
+    setForm((prev) => ({ ...prev, ipAddress: data.ip }));
+  } catch (error) {
+    console.error("Failed to fetch IP address:", error);
+    toast.warn("Unable to fetch IP address.");
+  }
+};
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -34,6 +44,19 @@ const ApplyLeave = () => {
       });
     }
   }, [location.state]);
+useEffect(() => {
+  if (!loading) {
+    if (!employee) {
+      navigate("/employee/login", {
+        state: { message: "Session expired. Please login again." },
+      });
+    } else {
+      setForm((prev) => ({ ...prev, employeeId: employee.employeeId }));
+      getCurrentLocation();
+      fetchIPAddress(); // ← fetch IP here
+    }
+  }
+}, [employee, loading, navigate]);
 
   useEffect(() => {
     if (!loading) {
@@ -43,22 +66,10 @@ const ApplyLeave = () => {
         });
       } else {
         setForm((prev) => ({ ...prev, employeeId: employee.employeeId }));
-        fetchIPAddress();
         getCurrentLocation();
       }
     }
   }, [employee, loading, navigate]);
-
-  const fetchIPAddress = async () => {
-    try {
-      const response = await fetch("https://api64.ipify.org?format=json");
-      const data = await response.json();
-      setForm((prev) => ({ ...prev, ipAddress: data.ip }));
-    } catch (error) {
-      console.error("Failed to fetch IP address:", error);
-      toast.warn("Unable to fetch IP address.");
-    }
-  };
 
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
@@ -70,7 +81,7 @@ const ApplyLeave = () => {
             longitude: position.coords.longitude,
           }));
         },
-        () => {
+        (error) => {
           toast.warn("Location access denied. Location won't be stored.");
         }
       );
@@ -108,21 +119,11 @@ const ApplyLeave = () => {
         reason: "",
         latitude: "",
         longitude: "",
-        ipAddress: "",
       });
     } catch (err) {
       toast.error(err.response?.data?.message || "Leave application failed.");
     } finally {
       setSubmitting(false);
-    }
-  };
-
-  const handleViewLocation = () => {
-    if (form.latitude && form.longitude) {
-      const googleMapsUrl = `https://www.google.com/maps?q=${form.latitude},${form.longitude}`;
-      window.open(googleMapsUrl, "_blank");
-    } else {
-      toast.warn("Location not available.");
     }
   };
 
@@ -132,6 +133,7 @@ const ApplyLeave = () => {
   return (
     <div>
       <EmployeeNavbar onLogout={() => navigate("/employee/login")} />
+
       <ToastContainer position="top-right" autoClose={3000} pauseOnHover theme="colored" />
 
       <div className="max-w-md mx-auto mt-12 p-6 bg-white shadow-xl rounded-xl animate-fade-in transition">
@@ -202,21 +204,11 @@ const ApplyLeave = () => {
             />
           </div>
 
-          {/* Hidden fields */}
+          {/* Hidden latitude & longitude */}
           <input type="hidden" name="latitude" value={form.latitude} />
           <input type="hidden" name="longitude" value={form.longitude} />
           <input type="hidden" name="ipAddress" value={form.ipAddress} />
 
-          {/* View Location Button */}
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={handleViewLocation}
-              className="text-sm text-blue-600 underline hover:text-blue-800"
-            >
-              View Current Location
-            </button>
-          </div>
 
           <button
             type="submit"
