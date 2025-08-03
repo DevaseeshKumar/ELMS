@@ -5,7 +5,8 @@ import Footer from '../components/Footer';
 import bugIcon from '../assets/bug.jpeg';
 import gmailIcon from '../assets/gmail.png';
 import contactIcon from '../assets/support.png';
-import QRCode from 'qrcode.react';
+import QRCode from 'react-qr-code';
+
 
 const Help = () => {
   return (
@@ -56,16 +57,19 @@ const Help = () => {
 
           {/* QR Code */}
           <Link
-            to="https://leavo.netlify.app/email-support"
-            target="_blank"
-            className="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center hover:shadow-xl transition"
-          >
-            <QRCode value="https://leavo.netlify.app/email-support" size={100} className="mb-4" />
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">Scan QR</h2>
-            <p className="text-sm text-gray-600 text-center">
-              Scan to quickly open the Email Inquiry page on your phone.
-            </p>
-          </Link>
+  to="https://leavo.netlify.app/email-support"
+  target="_blank"
+  className="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center hover:shadow-xl transition"
+>
+  <div className="bg-white p-2 rounded mb-4">
+    <QRCode value="https://leavo.netlify.app/email-support" size={100} />
+  </div>
+  <h2 className="text-xl font-semibold text-gray-800 mb-2">Scan QR</h2>
+  <p className="text-sm text-gray-600 text-center">
+    Scan to quickly open the Email Inquiry page on your phone.
+  </p>
+</Link>
+
         </div>
       </div>
       <Footer />
