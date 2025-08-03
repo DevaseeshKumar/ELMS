@@ -170,7 +170,7 @@ const LeaveHistory = () => {
           <div className="bg-white p-4 rounded shadow-md max-w-md mx-auto relative">
             <Calendar
               tileContent={getTileContent}
-              calendarType="ISO 8601"
+              calendarType="ISO8601"
               prev2Label={null}
               next2Label={null}
               className="w-full"
