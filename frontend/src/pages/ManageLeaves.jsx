@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Footer from "../components/Footer";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
-import "jspdf-autotable"; // ⬅️ This is required to extend jsPDF with autoTable
+import autoTable from "jspdf-autotable";
 
 
 const ManageLeaves = () => {
@@ -183,21 +183,26 @@ const exportToExcel = () => {
 };
 
 const exportToPDF = () => {
-  const doc = new jsPDF();
-  doc.autoTable({
-    head: [["Employee", "ID", "Type", "Reason", "Status", "From", "To"]],
-    body: filteredLeaves.map((leave) => [
+    const doc = new jsPDF();
+    doc.text("Leave Requests", 14, 15);
+    const tableData = filteredLeaves.map((leave) => [
       leave.employee?.username,
       leave.employee?.employeeId,
       leave.leaveType,
-      leave.reason,
+      new Date(leave.startDate).toLocaleDateString(),
+      new Date(leave.endDate).toLocaleDateString(),
       leave.status,
-      leave.startDate,
-      leave.endDate,
-    ]),
-  });
-  doc.save("leaves.pdf");
-};
+      leave.reviewedBy?.username || "Pending",
+    ]);
+
+    autoTable(doc, {
+      head: [["Name", "Employee ID", "Type", "Start", "End", "Status", "Reviewed By"]],
+      body: tableData,
+      startY: 25,
+    });
+
+    doc.save("LeaveRequests.pdf");
+  };
 
 
   return (
