@@ -6,9 +6,6 @@ import AdminNavbar from "../components/AdminNavbar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Footer from "../components/Footer";
-import * as XLSX from "xlsx";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 
 const ManageLeaves = () => {
   const { admin, loading } = useAdminSession();
@@ -22,7 +19,7 @@ const ManageLeaves = () => {
   const [rejectingNowId, setRejectingNowId] = useState(null);
   const [showMap, setShowMap] = useState(null);
   const [showInfo, setShowInfo] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
+
   useEffect(() => {
     if (!loading && !admin) {
       toast.warn("Session expired. Please login again.", {
@@ -55,8 +52,12 @@ const ManageLeaves = () => {
         withCredentials: true,
       });
 
-      const sortedLeaves = res.data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-
+      const sortedLeaves = res.data.sort((a, b) => {
+        const statusOrder = { Pending: 0, Approved: 1, Rejected: 2 };
+        const statusCompare = statusOrder[a.status] - statusOrder[b.status];
+        if (statusCompare !== 0) return statusCompare;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
 
       setLeaves(sortedLeaves);
 
@@ -145,48 +146,6 @@ const ManageLeaves = () => {
       setRejectingNowId(null);
     }
   };
-  const filteredLeaves = leaves.filter((leave) => {
-  const search = searchTerm.toLowerCase();
-  const empName = leave.employee?.username?.toLowerCase() || "";
-  const empId = leave.employee?.employeeId?.toLowerCase() || "";
-  const type = leave.leaveType?.toLowerCase() || "";
-  const status = leave.status?.toLowerCase() || "";
-  return (
-    empName.includes(search) ||
-    empId.includes(search) ||
-    type.includes(search) ||
-    status.includes(search)
-  );
-});
-const exportToExcel = () => {
-  const data = filteredLeaves.map((l) => ({
-    Employee: `${l.employee?.username} (${l.employee?.employeeId})`,
-    Type: l.leaveType,
-    Status: l.status,
-    Reason: l.reason || "N/A",
-    From: new Date(l.startDate).toLocaleDateString(),
-    To: new Date(l.endDate).toLocaleDateString(),
-  }));
-  const worksheet = XLSX.utils.json_to_sheet(data);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Leaves");
-  XLSX.writeFile(workbook, "leaves.xlsx");
-};
-
-const exportToPDF = () => {
-  const input = document.getElementById("leaveCards");
-  html2canvas(input).then((canvas) => {
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "mm", "a4");
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    pdf.save("leaves.pdf");
-  });
-};
-
-
 
   return (
     <div>
@@ -196,37 +155,12 @@ const exportToPDF = () => {
         <h2 className="text-2xl font-bold mb-6 text-center text-indigo-700">
           Manage Leave Requests
         </h2>
-<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
-  <input
-    type="text"
-    placeholder="Search by name, ID, type or status..."
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    className="border rounded px-3 py-2 w-full sm:max-w-md"
-  />
-  <div className="flex gap-2">
-    <button
-      onClick={exportToExcel}
-      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
-    >
-      Export Excel
-    </button>
-    <button
-      onClick={exportToPDF}
-      className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
-    >
-      Export PDF
-    </button>
-  </div>
-</div>
 
         {leaves.length === 0 ? (
           <p className="text-center text-gray-600">No leave requests available.</p>
         ) : (
-          <div id="leaveCards" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-            {filteredLeaves.map((leave) => {
-
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {leaves.map((leave) => {
               const empLeaves = leavesByEmployee[leave.employee?._id] || {
                 earnedDays: new Set(),
                 sickDays: new Set(),
