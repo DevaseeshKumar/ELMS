@@ -45,16 +45,19 @@ const LeaveHistory = () => {
     }
 
     const fetchLeaves = async () => {
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/employee/my-leaves`, {
-          withCredentials: true,
-        });
-        setLeaves(res.data);
-        calculateSummary(res.data);
-      } catch (err) {
-        setError(err.response?.data?.message || "Failed to fetch leave history");
-      }
-    };
+  try {
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/employee/my-leaves`, {
+      withCredentials: true,
+    });
+
+    const data = Array.isArray(res.data) ? res.data : [];  // ✅ Ensure it's always an array
+    setLeaves(data);
+    calculateSummary(data);
+  } catch (err) {
+    setError(err.response?.data?.message || "Failed to fetch leave history");
+  }
+};
+
 
     const calculateSummary = (leaves) => {
       const summary = {
@@ -135,59 +138,58 @@ const LeaveHistory = () => {
           <div className="bg-orange-100 p-3 rounded">🛑 Casual: {leaveSummary.casual}</div>
         </div>
 
-        {/* Shimmer or Data */}
-        {showShimmer && leaves.length === 0 ? (
-          <div className="animate-pulse space-y-4">
-            <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-24 bg-gray-200 rounded"></div>
-              ))}
-            </div>
+        {Array.isArray(leaves) && leaves.length > 0 ? (
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {leaves.map((leave) => (
+      <div
+        key={leave._id}
+        className={`p-5 rounded-xl border shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:rotate-[0.5deg] bg-gradient-to-br ${getGradientByType(
+          leave.leaveType
+        )}`}
+      >
+        <div className="flex justify-between items-center mb-2">
+          <div className="text-sm text-gray-700">
+            <p><strong>From:</strong> {new Date(leave.startDate).toLocaleDateString()}</p>
+            <p><strong>To:</strong> {new Date(leave.endDate).toLocaleDateString()}</p>
           </div>
-        ) : leaves.length === 0 ? (
-          <p className="text-gray-600">No leave records found.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {leaves.map((leave) => (
-              <div
-                key={leave._id}
-                className={`p-5 rounded-xl border shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:rotate-[0.5deg] bg-gradient-to-br ${getGradientByType(
-                  leave.leaveType
-                )}`}
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <div className="text-sm text-gray-700">
-                    <p><strong>From:</strong> {new Date(leave.startDate).toLocaleDateString()}</p>
-                    <p><strong>To:</strong> {new Date(leave.endDate).toLocaleDateString()}</p>
-                  </div>
-                  <span
-                    className={`px-3 py-1 text-sm rounded-full font-semibold ${getStatusColor(
-                      leave.status
-                    )}`}
-                  >
-                    {leave.status}
-                  </span>
-                </div>
-                <div className="text-sm text-gray-800 mt-2 space-y-1">
-  <p><strong>Type:</strong> {leave.leaveType}</p>
-  <p><strong>Reason:</strong> {leave.reason || "N/A"}</p>
-  <p><strong>Reviewed By:</strong>{" "}
-    {leave.reviewedBy?.username
-      ? `${leave.reviewedBy.username} (${leave.reviewedBy.role})`
-      : "Not reviewed yet"}
-  </p>
-  <p><strong>Reviewed At:</strong>{" "}
-    {leave.reviewedAt
-      ? new Date(leave.reviewedAt).toLocaleString()
-      : "Not reviewed yet"}
-  </p>
-</div>
+          <span
+            className={`px-3 py-1 text-sm rounded-full font-semibold ${getStatusColor(
+              leave.status
+            )}`}
+          >
+            {leave.status}
+          </span>
+        </div>
+        <div className="text-sm text-gray-800 mt-2 space-y-1">
+          <p><strong>Type:</strong> {leave.leaveType}</p>
+          <p><strong>Reason:</strong> {leave.reason || "N/A"}</p>
+          <p><strong>Reviewed By:</strong>{" "}
+            {leave.reviewedBy?.username
+              ? `${leave.reviewedBy.username} (${leave.reviewedBy.role})`
+              : "Not reviewed yet"}
+          </p>
+          <p><strong>Reviewed At:</strong>{" "}
+            {leave.reviewedAt
+              ? new Date(leave.reviewedAt).toLocaleString()
+              : "Not reviewed yet"}
+          </p>
+        </div>
+      </div>
+    ))}
+  </div>
+) : showShimmer ? (
+  <div className="animate-pulse space-y-4">
+    <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="h-24 bg-gray-200 rounded"></div>
+      ))}
+    </div>
+  </div>
+) : (
+  <p className="text-gray-600">No leave records found.</p>
+)}
 
-              </div>
-            ))}
-          </div>
-        )}
       </div>
       <div className="bg-white shadow rounded p-6 mt-6 flex justify-center">
   <div>
