@@ -195,7 +195,8 @@ const LeaveHistory = () => {
     <Calendar 
       tileClassName={({ date, view }) => {
         if (view === "month") {
-          const matchedLeave = leaves.find((leave) => {
+          const matchedLeave = (Array.isArray(leaves) ? leaves : []).find((leave) => {
+
             const start = new Date(leave.startDate);
             const end = new Date(leave.endDate);
             return (
@@ -218,7 +219,8 @@ const LeaveHistory = () => {
 
       tileContent={({ date, view }) => {
         if (view === "month") {
-          const matchedLeave = leaves.find((leave) => {
+          const matchedLeave = (Array.isArray(leaves) ? leaves : []).find((leave) => {
+
             const start = new Date(leave.startDate);
             const end = new Date(leave.endDate);
             return (
