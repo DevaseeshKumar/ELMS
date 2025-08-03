@@ -6,6 +6,9 @@ import AdminNavbar from "../components/AdminNavbar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Footer from "../components/Footer";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const ManageLeaves = () => {
   const { admin, loading } = useAdminSession();
@@ -19,6 +22,8 @@ const ManageLeaves = () => {
   const [rejectingNowId, setRejectingNowId] = useState(null);
   const [showMap, setShowMap] = useState(null);
   const [showInfo, setShowInfo] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
 
   useEffect(() => {
     if (!loading && !admin) {
@@ -146,6 +151,53 @@ const ManageLeaves = () => {
       setRejectingNowId(null);
     }
   };
+  const filteredLeaves = leaves.filter((leave) => {
+  const values = [
+    leave.employee?.username,
+    leave.employee?.employeeId,
+    leave.leaveType,
+    leave.reason,
+    leave.status,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return values.includes(searchTerm.toLowerCase());
+});
+const exportToExcel = () => {
+  const data = filteredLeaves.map((leave) => ({
+    Employee: leave.employee?.username,
+    ID: leave.employee?.employeeId,
+    Type: leave.leaveType,
+    Reason: leave.reason,
+    Status: leave.status,
+    From: leave.startDate,
+    To: leave.endDate,
+  }));
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Leaves");
+  XLSX.writeFile(wb, "leaves.xlsx");
+};
+
+const exportToPDF = () => {
+  const doc = new jsPDF();
+  doc.autoTable({
+    head: [["Employee", "ID", "Type", "Reason", "Status", "From", "To"]],
+    body: filteredLeaves.map((leave) => [
+      leave.employee?.username,
+      leave.employee?.employeeId,
+      leave.leaveType,
+      leave.reason,
+      leave.status,
+      leave.startDate,
+      leave.endDate,
+    ]),
+  });
+  doc.save("leaves.pdf");
+};
+
 
   return (
     <div>
@@ -155,12 +207,25 @@ const ManageLeaves = () => {
         <h2 className="text-2xl font-bold mb-6 text-center text-indigo-700">
           Manage Leave Requests
         </h2>
+<div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
+  <input
+    type="text"
+    placeholder="Search leaves..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="w-full sm:w-1/2 border rounded p-2"
+  />
+  <div className="flex gap-2">
+    <button onClick={exportToExcel} className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700">Export Excel</button>
+    <button onClick={exportToPDF} className="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700">Export PDF</button>
+  </div>
+</div>
 
         {leaves.length === 0 ? (
           <p className="text-center text-gray-600">No leave requests available.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {leaves.map((leave) => {
+            {filteredLeaves.map((leave) => {
               const empLeaves = leavesByEmployee[leave.employee?._id] || {
                 earnedDays: new Set(),
                 sickDays: new Set(),
