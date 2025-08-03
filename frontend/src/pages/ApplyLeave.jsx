@@ -20,6 +20,13 @@ const ApplyLeave = () => {
     reason: "",
   });
 
+  const [geoData, setGeoData] = useState({
+    latitude: null,
+    longitude: null,
+    ipAddress: null,
+    locationName: null,
+  });
+
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -40,9 +47,42 @@ const ApplyLeave = () => {
         });
       } else {
         setForm((prev) => ({ ...prev, employeeId: employee.employeeId }));
+        fetchLocationData(); // ⬅️ Fetch geo/IP/location on mount
       }
     }
   }, [employee, loading, navigate]);
+
+  const fetchLocationData = async () => {
+    try {
+      // Get geolocation
+      const pos = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+      });
+      const latitude = pos.coords.latitude;
+      const longitude = pos.coords.longitude;
+
+      // Get IP address
+      const ipRes = await fetch("https://api.ipify.org?format=json");
+      const ipData = await ipRes.json();
+      const ipAddress = ipData.ip;
+
+      // Get city/location name
+      const locationRes = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+      );
+      const locationData = await locationRes.json();
+      const locationName =
+        locationData?.address?.city ||
+        locationData?.address?.town ||
+        locationData?.address?.village ||
+        "Unknown";
+
+      setGeoData({ latitude, longitude, ipAddress, locationName });
+    } catch (err) {
+      console.error("Location fetch error:", err);
+      toast.warn("Location access failed. Proceeding without it.");
+    }
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -61,7 +101,10 @@ const ApplyLeave = () => {
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/api/employee/apply-leave`,
-        form,
+        {
+          ...form,
+          ...geoData, // ⬅️ Include lat, lon, ip, locationName
+        },
         { withCredentials: true }
       );
 

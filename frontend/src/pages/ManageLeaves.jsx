@@ -17,6 +17,8 @@ const ManageLeaves = () => {
   const [rejectingLeaveId, setRejectingLeaveId] = useState(null);
   const [rejectionReason, setRejectionReason] = useState("");
   const [rejectingNowId, setRejectingNowId] = useState(null);
+  const [showMap, setShowMap] = useState(null);
+  const [showInfo, setShowInfo] = useState(null);
 
   useEffect(() => {
     if (!loading && !admin) {
@@ -51,17 +53,13 @@ const ManageLeaves = () => {
       });
 
       const sortedLeaves = res.data.sort((a, b) => {
-  // 1. Prioritize "Pending" > "Approved" > "Rejected"
-  const statusOrder = { Pending: 0, Approved: 1, Rejected: 2 };
-  const statusCompare = statusOrder[a.status] - statusOrder[b.status];
+        const statusOrder = { Pending: 0, Approved: 1, Rejected: 2 };
+        const statusCompare = statusOrder[a.status] - statusOrder[b.status];
+        if (statusCompare !== 0) return statusCompare;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
 
-  if (statusCompare !== 0) return statusCompare;
-
-  // 2. If same status, sort by newest createdAt first
-  return new Date(b.createdAt) - new Date(a.createdAt);
-});
-
-setLeaves(sortedLeaves);
+      setLeaves(sortedLeaves);
 
       const empMap = {};
       sortedLeaves.forEach((leave) => {
@@ -249,6 +247,21 @@ setLeaves(sortedLeaves);
                       )}
                     </button>
                   </div>
+
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      onClick={() => setShowMap(leave)}
+                      className="flex-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                    >
+                      View Location
+                    </button>
+                    <button
+                      onClick={() => setShowInfo(leave)}
+                      className="flex-1 px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded"
+                    >
+                      More Info
+                    </button>
+                  </div>
                 </div>
               );
             })}
@@ -283,6 +296,54 @@ setLeaves(sortedLeaves);
                   className="px-4 py-1 bg-red-600 text-white rounded"
                 >
                   Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showMap && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-4 rounded-lg shadow-lg w-full max-w-md relative">
+              <h3 className="text-lg font-bold mb-2 text-blue-700">Location Map</h3>
+              <iframe
+                title="Google Maps"
+                width="100%"
+                height="300"
+                style={{ border: 0 }}
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://maps.google.com/maps?q=${showMap.latitude},${showMap.longitude}&z=15&output=embed`}
+              ></iframe>
+              <div className="flex justify-end mt-4">
+                <button
+                  onClick={() => setShowMap(null)}
+                  className="px-4 py-1 bg-gray-500 text-white rounded"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showInfo && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-sm">
+              <h3 className="text-lg font-bold mb-3 text-indigo-700">More Info</h3>
+              <p className="text-sm mb-2">
+                <strong>IP Address:</strong> {showInfo.ipAddress || "Not Available"}
+              </p>
+              <p className="text-sm mb-4">
+                <strong>Location Name:</strong> {showInfo.locationName || "Not Available"}
+              </p>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setShowInfo(null)}
+                  className="px-4 py-1 bg-gray-500 text-white rounded"
+                >
+                  Close
                 </button>
               </div>
             </div>

@@ -113,7 +113,15 @@ const applyLeave = async (req, res) => {
     return res.status(401).json({ message: "Session expired. Please login again." });
   }
 
-  const { startDate, endDate, reason, leaveType, latitude, longitude } = req.body;
+  const {
+    startDate,
+    endDate,
+    reason,
+    leaveType,
+    latitude,
+    longitude,
+    locationName // ✅ Now supporting locationName too
+  } = req.body;
 
   if (!startDate || !endDate || !reason || !leaveType) {
     return res.status(400).json({ message: "All fields are required" });
@@ -134,17 +142,16 @@ const applyLeave = async (req, res) => {
       latitude: latitude || null,
       longitude: longitude || null,
       ipAddress: ipAddress || null,
-      // locationName: optional - you can resolve this from coordinates or IP if needed
+      locationName: locationName || null, // ✅ Save location name if provided
     });
 
     await leave.save();
-    res.status(201).json({ message: "Leave applied successfully" });
+    return res.status(201).json({ message: "Leave applied successfully" });
   } catch (err) {
     console.error("Apply Leave Error:", err);
-    res.status(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   }
 };
-
 
 
 
