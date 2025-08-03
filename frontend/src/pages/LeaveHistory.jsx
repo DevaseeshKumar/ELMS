@@ -26,6 +26,8 @@ const LeaveHistory = () => {
 
   const [error, setError] = useState("");
   const [showShimmer, setShowShimmer] = useState(false);
+  const [markedDates, setMarkedDates] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   useEffect(() => {
     if (location.state?.message) {
@@ -46,11 +48,10 @@ const LeaveHistory = () => {
 
     const fetchLeaves = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/employee/my-leaves`, {
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/employee/my-leaves`, {
           withCredentials: true,
         });
-        setLeaves(Array.isArray(res.data) ? res.data : []);
-
+        setLeaves(res.data);
         calculateSummary(res.data);
       } catch (err) {
         setError(err.response?.data?.message || "Failed to fetch leave history");
@@ -67,6 +68,8 @@ const LeaveHistory = () => {
         casual: 0,
       };
 
+      const approvedDates = [];
+
       leaves.forEach((leave) => {
         summary[leave.status.toLowerCase()]++;
 
@@ -75,9 +78,18 @@ const LeaveHistory = () => {
           if (type.includes("earned")) summary.earned++;
           if (type.includes("sick")) summary.sick++;
           if (type.includes("casual")) summary.casual++;
+
+          // Collect all approved leave dates
+          let current = new Date(leave.startDate);
+          const end = new Date(leave.endDate);
+          while (current <= end) {
+            approvedDates.push(new Date(current));
+            current.setDate(current.getDate() + 1);
+          }
         }
       });
 
+      setMarkedDates(approvedDates);
       setLeaveSummary(summary);
     };
 
@@ -136,6 +148,20 @@ const LeaveHistory = () => {
           <div className="bg-orange-100 p-3 rounded">🛑 Casual: {leaveSummary.casual}</div>
         </div>
 
+        {/* Calendar */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold text-cyan-800 mb-2">Approved Leaves Calendar</h3>
+          <Calendar
+            onChange={setSelectedDate}
+            value={selectedDate}
+            tileClassName={({ date }) =>
+              markedDates.some((d) => d.toDateString() === date.toDateString())
+                ? "bg-green-200 font-semibold text-green-900 rounded-md"
+                : ""
+            }
+          />
+        </div>
+
         {/* Shimmer or Data */}
         {showShimmer && leaves.length === 0 ? (
           <div className="animate-pulse space-y-4">
@@ -150,8 +176,7 @@ const LeaveHistory = () => {
           <p className="text-gray-600">No leave records found.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {Array.isArray(leaves) && leaves.map((leave) => (
-
+            {leaves.map((leave) => (
               <div
                 key={leave._id}
                 className={`p-5 rounded-xl border shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:rotate-[0.5deg] bg-gradient-to-br ${getGradientByType(
@@ -172,75 +197,24 @@ const LeaveHistory = () => {
                   </span>
                 </div>
                 <div className="text-sm text-gray-800 mt-2 space-y-1">
-  <p><strong>Type:</strong> {leave.leaveType}</p>
-  <p><strong>Reason:</strong> {leave.reason || "N/A"}</p>
-  <p><strong>Reviewed By:</strong>{" "}
-    {leave.reviewedBy?.username
-      ? `${leave.reviewedBy.username} (${leave.reviewedBy.role})`
-      : "Not reviewed yet"}
-  </p>
-  <p><strong>Reviewed At:</strong>{" "}
-    {leave.reviewedAt
-      ? new Date(leave.reviewedAt).toLocaleString()
-      : "Not reviewed yet"}
-  </p>
-</div>
-
+                  <p><strong>Type:</strong> {leave.leaveType}</p>
+                  <p><strong>Reason:</strong> {leave.reason || "N/A"}</p>
+                  <p><strong>Reviewed By:</strong>{" "}
+                    {leave.reviewedBy?.username
+                      ? `${leave.reviewedBy.username} (${leave.reviewedBy.role})`
+                      : "Not reviewed yet"}
+                  </p>
+                  <p><strong>Reviewed At:</strong>{" "}
+                    {leave.reviewedAt
+                      ? new Date(leave.reviewedAt).toLocaleString()
+                      : "Not reviewed yet"}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
         )}
       </div>
-      <div className="bg-white shadow rounded p-6 mt-6 flex justify-center">
-  <div>
-    <h2 className="text-md font-semibold mb-4 text-center">My Leave Calendar</h2>
-    <Calendar 
-      tileClassName={({ date, view }) => {
-        if (view === "month") {
-          const matchedLeave = leaves.find((leave) => {
-            const start = new Date(leave.startDate);
-            const end = new Date(leave.endDate);
-            return (
-              leave.status === "Approved" &&
-              date >= start &&
-              date <= end
-            );
-          });
-
-          if (matchedLeave) {
-            const type = matchedLeave.leaveType.toLowerCase();
-            if (type.includes("earned")) return "!bg-cyan-200 !text-cyan-900 font-semibold text-center rounded";
-            if (type.includes("sick")) return "!bg-purple-200 !text-purple-900 font-semibold text-center rounded";
-            if (type.includes("casual")) return "!bg-orange-200 !text-orange-900 font-semibold text-center rounded";
-            return "!bg-gray-200 !text-gray-900 font-semibold text-center rounded";
-          }
-        }
-        return null;
-      }}
-
-      tileContent={({ date, view }) => {
-        if (view === "month") {
-          const matchedLeave = leaves.find((leave) => {
-            const start = new Date(leave.startDate);
-            const end = new Date(leave.endDate);
-            return (
-              leave.status === "Approved" &&
-              date >= start &&
-              date <= end
-            );
-          });
-
-          return matchedLeave ? (
-            <abbr title={`${matchedLeave.leaveType} Leave`} className="no-underline" />
-          ) : null;
-        }
-      }}
-    />
-  </div>
-</div>
-
-
-
 
       <Footer />
     </div>
