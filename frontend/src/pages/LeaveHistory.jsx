@@ -7,7 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Footer from "../components/Footer";
 import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
+import 'react-calendar/dist/Calendar.css';
 
 const LeaveHistory = () => {
   const { employee, loading } = useEmployeeSession();
@@ -23,6 +23,7 @@ const LeaveHistory = () => {
     sick: 0,
     casual: 0,
   });
+
   const [error, setError] = useState("");
   const [showShimmer, setShowShimmer] = useState(false);
 
@@ -45,16 +46,13 @@ const LeaveHistory = () => {
 
     const fetchLeaves = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/api/employee/my-leaves`,
-          { withCredentials: true }
-        );
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/employee/my-leaves`, {
+          withCredentials: true,
+        });
         setLeaves(res.data);
         calculateSummary(res.data);
       } catch (err) {
-        setError(
-          err.response?.data?.message || "Failed to fetch leave history"
-        );
+        setError(err.response?.data?.message || "Failed to fetch leave history");
       }
     };
 
@@ -70,6 +68,7 @@ const LeaveHistory = () => {
 
       leaves.forEach((leave) => {
         summary[leave.status.toLowerCase()]++;
+
         if (leave.status === "Approved") {
           const type = leave.leaveType.toLowerCase();
           if (type.includes("earned")) summary.earned++;
@@ -83,9 +82,11 @@ const LeaveHistory = () => {
 
     if (employee) {
       fetchLeaves();
+
       const timer = setTimeout(() => {
         if (!leaves.length) setShowShimmer(true);
       }, 500);
+
       return () => clearTimeout(timer);
     }
   }, [employee, loading, navigate]);
@@ -111,45 +112,17 @@ const LeaveHistory = () => {
     return "from-gray-200 to-white";
   };
 
-  const getTileContent = ({ date, view }) => {
-    if (view !== "month") return null;
-
-    const matchedLeave = leaves.find(
-      (l) =>
-        new Date(l.startDate).setHours(0, 0, 0, 0) <= date.setHours(0, 0, 0, 0) &&
-        date.setHours(0, 0, 0, 0) <= new Date(l.endDate).setHours(0, 0, 0, 0) &&
-        l.status === "Approved"
-    );
-
-    if (!matchedLeave) return null;
-
-    const type = matchedLeave.leaveType.toLowerCase();
-    let bg = "";
-
-    if (type.includes("earned")) bg = "bg-cyan-200";
-    else if (type.includes("sick")) bg = "bg-purple-200";
-    else if (type.includes("casual")) bg = "bg-orange-200";
-
-    return (
-      <div
-        className={`absolute inset-0 m-auto w-6 h-6 ${bg} rounded-full z-0`}
-        style={{ pointerEvents: "none" }}
-      />
-    );
-  };
-
   if (loading) return <p className="p-6">Loading...</p>;
   if (!employee) return null;
 
   return (
     <div>
       <EmployeeNavbar onLogout={() => navigate("/employee/login")} />
+
       <ToastContainer position="top-right" autoClose={3000} theme="colored" />
 
       <div className="max-w-5xl mx-auto mt-10 p-6 bg-white rounded shadow">
-        <h2 className="text-xl font-bold mb-4 text-cyan-800">
-          Your Leave History
-        </h2>
+        <h2 className="text-xl font-bold mb-4 text-cyan-800">Your Leave History</h2>
         {error && <p className="text-red-600">{error}</p>}
 
         {/* Summary Cards */}
@@ -162,38 +135,7 @@ const LeaveHistory = () => {
           <div className="bg-orange-100 p-3 rounded">🛑 Casual: {leaveSummary.casual}</div>
         </div>
 
-        {/* Calendar */}
-        <div className="my-6">
-          <h3 className="text-lg font-semibold mb-2 text-gray-700">
-            Calendar View of Approved Leaves
-          </h3>
-          <div className="bg-white p-4 rounded shadow-md max-w-md mx-auto relative">
-            <Calendar
-  tileContent={getTileContent}
-  calendarType="ISO8601" // ✅ Corrected
-  prev2Label={null}
-  next2Label={null}
-  className="w-full"
-/>
-
-            <div className="text-sm mt-4 text-gray-600 flex gap-4 justify-center">
-              <div className="flex items-center gap-1">
-                <span className="w-4 h-4 rounded-full bg-cyan-200 inline-block" />
-                Earned
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="w-4 h-4 rounded-full bg-purple-200 inline-block" />
-                Sick
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="w-4 h-4 rounded-full bg-orange-200 inline-block" />
-                Casual
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Leave Cards */}
+        {/* Shimmer or Data */}
         {showShimmer && leaves.length === 0 ? (
           <div className="animate-pulse space-y-4">
             <div className="h-4 bg-gray-200 rounded w-1/3"></div>
@@ -216,14 +158,8 @@ const LeaveHistory = () => {
               >
                 <div className="flex justify-between items-center mb-2">
                   <div className="text-sm text-gray-700">
-                    <p>
-                      <strong>From:</strong>{" "}
-                      {new Date(leave.startDate).toLocaleDateString()}
-                    </p>
-                    <p>
-                      <strong>To:</strong>{" "}
-                      {new Date(leave.endDate).toLocaleDateString()}
-                    </p>
+                    <p><strong>From:</strong> {new Date(leave.startDate).toLocaleDateString()}</p>
+                    <p><strong>To:</strong> {new Date(leave.endDate).toLocaleDateString()}</p>
                   </div>
                   <span
                     className={`px-3 py-1 text-sm rounded-full font-semibold ${getStatusColor(
@@ -234,30 +170,76 @@ const LeaveHistory = () => {
                   </span>
                 </div>
                 <div className="text-sm text-gray-800 mt-2 space-y-1">
-                  <p>
-                    <strong>Type:</strong> {leave.leaveType}
-                  </p>
-                  <p>
-                    <strong>Reason:</strong> {leave.reason || "N/A"}
-                  </p>
-                  <p>
-                    <strong>Reviewed By:</strong>{" "}
-                    {leave.reviewedBy?.username
-                      ? `${leave.reviewedBy.username} (${leave.reviewedBy.role})`
-                      : "Not reviewed yet"}
-                  </p>
-                  <p>
-                    <strong>Reviewed At:</strong>{" "}
-                    {leave.reviewedAt
-                      ? new Date(leave.reviewedAt).toLocaleString()
-                      : "Not reviewed yet"}
-                  </p>
-                </div>
+  <p><strong>Type:</strong> {leave.leaveType}</p>
+  <p><strong>Reason:</strong> {leave.reason || "N/A"}</p>
+  <p><strong>Reviewed By:</strong>{" "}
+    {leave.reviewedBy?.username
+      ? `${leave.reviewedBy.username} (${leave.reviewedBy.role})`
+      : "Not reviewed yet"}
+  </p>
+  <p><strong>Reviewed At:</strong>{" "}
+    {leave.reviewedAt
+      ? new Date(leave.reviewedAt).toLocaleString()
+      : "Not reviewed yet"}
+  </p>
+</div>
+
               </div>
             ))}
           </div>
         )}
       </div>
+      <div className="bg-white shadow rounded p-6 mt-6 flex justify-center">
+  <div>
+    <h2 className="text-md font-semibold mb-4 text-center">My Leave Calendar</h2>
+    <Calendar 
+      tileClassName={({ date, view }) => {
+        if (view === "month") {
+          const matchedLeave = leaves.find((leave) => {
+            const start = new Date(leave.startDate);
+            const end = new Date(leave.endDate);
+            return (
+              leave.status === "Approved" &&
+              date >= start &&
+              date <= end
+            );
+          });
+
+          if (matchedLeave) {
+            const type = matchedLeave.leaveType.toLowerCase();
+            if (type.includes("earned")) return "!bg-cyan-200 !text-cyan-900 font-semibold text-center rounded";
+            if (type.includes("sick")) return "!bg-purple-200 !text-purple-900 font-semibold text-center rounded";
+            if (type.includes("casual")) return "!bg-orange-200 !text-orange-900 font-semibold text-center rounded";
+            return "!bg-gray-200 !text-gray-900 font-semibold text-center rounded";
+          }
+        }
+        return null;
+      }}
+
+      tileContent={({ date, view }) => {
+        if (view === "month") {
+          const matchedLeave = leaves.find((leave) => {
+            const start = new Date(leave.startDate);
+            const end = new Date(leave.endDate);
+            return (
+              leave.status === "Approved" &&
+              date >= start &&
+              date <= end
+            );
+          });
+
+          return matchedLeave ? (
+            <abbr title={`${matchedLeave.leaveType} Leave`} className="no-underline" />
+          ) : null;
+        }
+      }}
+    />
+  </div>
+</div>
+
+
+
+
       <Footer />
     </div>
   );
