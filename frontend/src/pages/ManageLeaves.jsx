@@ -8,7 +8,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Footer from "../components/Footer";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import "jspdf-autotable"; // ⬅️ This is required to extend jsPDF with autoTable
+
 
 const ManageLeaves = () => {
   const { admin, loading } = useAdminSession();
