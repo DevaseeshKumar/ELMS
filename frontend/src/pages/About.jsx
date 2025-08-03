@@ -12,11 +12,11 @@ const About = () => {
         {/* Header */}
         <div className="max-w-5xl mx-auto text-center mb-14">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-indigo-700">
-            About <span className="text-purple-600">ELMS</span>
+            About <span className="text-purple-600">Leavo</span>
           </h1>
           <p className="text-lg text-gray-700 leading-relaxed">
-            The <strong>Employee Leave Management System (ELMS)</strong> is a secure and user-friendly web application designed to streamline leave requests and approvals across your organization.
-            With dedicated portals for <strong>Admins</strong>, <strong>HRs</strong>, and <strong>Employees</strong>, ELMS ensures transparency, efficiency, and accountability at every level.
+            The <strong>Employee Leave Management System (Leavo)</strong> is a secure and user-friendly web application designed to streamline leave requests and approvals across your organization.
+            With dedicated portals for <strong>Admins</strong>, <strong>HRs</strong>, and <strong>Employees</strong>, Leavo ensures transparency, efficiency, and accountability at every level.
           </p>
         </div>
 
@@ -59,10 +59,10 @@ const About = () => {
         {/* Benefits Section */}
         <div className="mt-20 text-center max-w-5xl mx-auto">
           <h2 className="text-3xl font-bold mb-4 text-gray-800">
-            Why Choose <span className="text-indigo-600">ELMS</span>?
+            Why Choose <span className="text-indigo-600">Leavo</span>?
           </h2>
           <p className="text-lg text-gray-700 mb-6">
-            ELMS eliminates manual paperwork and improves organizational productivity by automating the leave lifecycle.
+            Leavo eliminates manual paperwork and improves organizational productivity by automating the leave lifecycle.
             From seamless tracking to advanced reporting, it supports smart decision-making and compliance.
           </p>
 
