@@ -169,12 +169,13 @@ const LeaveHistory = () => {
           </h3>
           <div className="bg-white p-4 rounded shadow-md max-w-md mx-auto relative">
             <Calendar
-              tileContent={getTileContent}
-              calendarType="ISO8601"
-              prev2Label={null}
-              next2Label={null}
-              className="w-full"
-            />
+  tileContent={getTileContent}
+  calendarType="ISO8601" // ✅ Corrected
+  prev2Label={null}
+  next2Label={null}
+  className="w-full"
+/>
+
             <div className="text-sm mt-4 text-gray-600 flex gap-4 justify-center">
               <div className="flex items-center gap-1">
                 <span className="w-4 h-4 rounded-full bg-cyan-200 inline-block" />
