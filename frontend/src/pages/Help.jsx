@@ -4,7 +4,8 @@ import MainNavbar from '../components/MainNavbar';
 import Footer from '../components/Footer';
 import bugIcon from '../assets/bug.jpeg';
 import gmailIcon from '../assets/gmail.png';
-import contactIcon from '../assets/support.png'; // Ensure you have a support icon in your assets
+import contactIcon from '../assets/support.png';
+import QRCode from 'qrcode.react';
 
 const Help = () => {
   return (
@@ -16,7 +17,7 @@ const Help = () => {
           Need assistance? Choose one of the options below to contact us.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 w-full max-w-4xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full max-w-6xl">
           {/* Email Inquiry */}
           <Link
             to="/email-support"
@@ -24,7 +25,9 @@ const Help = () => {
           >
             <img src={gmailIcon} alt="Email Inquiry" className="w-16 h-16 rounded-full mb-4" />
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Email Inquiry</h2>
-            <p className="text-sm text-gray-600 text-center">Submit general questions or feedback via email.</p>
+            <p className="text-sm text-gray-600 text-center">
+              Submit general questions or feedback via email.
+            </p>
           </Link>
 
           {/* Bug Report */}
@@ -34,7 +37,9 @@ const Help = () => {
           >
             <img src={bugIcon} alt="Report Bug" className="w-16 h-16 rounded-full mb-4" />
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Report a Bug</h2>
-            <p className="text-sm text-gray-600 text-center">Let us know if something isn't working as expected.</p>
+            <p className="text-sm text-gray-600 text-center">
+              Let us know if something isn't working as expected.
+            </p>
           </Link>
 
           {/* Support */}
@@ -44,7 +49,22 @@ const Help = () => {
           >
             <img src={contactIcon} alt="Support" className="w-16 h-16 rounded-full mb-4" />
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Support</h2>
-            <p className="text-sm text-gray-600 text-center">Need help? Reach out to our support team.</p>
+            <p className="text-sm text-gray-600 text-center">
+              Need help? Reach out to our support team.
+            </p>
+          </Link>
+
+          {/* QR Code */}
+          <Link
+            to="https://leavo.netlify.app/email-support"
+            target="_blank"
+            className="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center hover:shadow-xl transition"
+          >
+            <QRCode value="https://leavo.netlify.app/email-support" size={100} className="mb-4" />
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Scan QR</h2>
+            <p className="text-sm text-gray-600 text-center">
+              Scan to quickly open the Email Inquiry page on your phone.
+            </p>
           </Link>
         </div>
       </div>
