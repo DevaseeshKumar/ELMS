@@ -18,7 +18,8 @@ if (isProduction) {
 // ✅ Allowed origins
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://employeeleavemanagementsys.netlify.app"
+  "https://employeeleavemanagementsys.netlify.app",
+  "https://leavo.netlify.app",
 ];
 
 // ✅ CORS setup
