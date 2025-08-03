@@ -8,7 +8,6 @@ import "react-toastify/dist/ReactToastify.css";
 import Footer from "../components/Footer";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import "../styles/CalendarColors.css"; // ← Make sure to create and import this
 
 const LeaveHistory = () => {
   const { employee, loading } = useEmployeeSession();
@@ -24,7 +23,6 @@ const LeaveHistory = () => {
     sick: 0,
     casual: 0,
   });
-
   const [error, setError] = useState("");
   const [showShimmer, setShowShimmer] = useState(false);
 
@@ -72,7 +70,6 @@ const LeaveHistory = () => {
 
       leaves.forEach((leave) => {
         summary[leave.status.toLowerCase()]++;
-
         if (leave.status === "Approved") {
           const type = leave.leaveType.toLowerCase();
           if (type.includes("earned")) summary.earned++;
@@ -86,11 +83,9 @@ const LeaveHistory = () => {
 
     if (employee) {
       fetchLeaves();
-
       const timer = setTimeout(() => {
         if (!leaves.length) setShowShimmer(true);
       }, 500);
-
       return () => clearTimeout(timer);
     }
   }, [employee, loading, navigate]);
@@ -116,26 +111,31 @@ const LeaveHistory = () => {
     return "from-gray-200 to-white";
   };
 
-  const getTileClassName = ({ date, view }) => {
-    if (view !== "month") return "";
+  const getTileContent = ({ date, view }) => {
+    if (view !== "month") return null;
 
     const matchedLeave = leaves.find(
       (l) =>
-        new Date(l.startDate).setHours(0, 0, 0, 0) <=
-          date.setHours(0, 0, 0, 0) &&
-        date.setHours(0, 0, 0, 0) <=
-          new Date(l.endDate).setHours(0, 0, 0, 0) &&
+        new Date(l.startDate).setHours(0, 0, 0, 0) <= date.setHours(0, 0, 0, 0) &&
+        date.setHours(0, 0, 0, 0) <= new Date(l.endDate).setHours(0, 0, 0, 0) &&
         l.status === "Approved"
     );
 
-    if (matchedLeave) {
-      const type = matchedLeave.leaveType.toLowerCase();
-      if (type.includes("earned")) return "calendar-earned";
-      if (type.includes("sick")) return "calendar-sick";
-      if (type.includes("casual")) return "calendar-casual";
-    }
+    if (!matchedLeave) return null;
 
-    return "";
+    const type = matchedLeave.leaveType.toLowerCase();
+    let bg = "";
+
+    if (type.includes("earned")) bg = "bg-cyan-200";
+    else if (type.includes("sick")) bg = "bg-purple-200";
+    else if (type.includes("casual")) bg = "bg-orange-200";
+
+    return (
+      <div
+        className={`absolute inset-0 m-auto w-6 h-6 ${bg} rounded-full z-0`}
+        style={{ pointerEvents: "none" }}
+      />
+    );
   };
 
   if (loading) return <p className="p-6">Loading...</p>;
@@ -144,7 +144,6 @@ const LeaveHistory = () => {
   return (
     <div>
       <EmployeeNavbar onLogout={() => navigate("/employee/login")} />
-
       <ToastContainer position="top-right" autoClose={3000} theme="colored" />
 
       <div className="max-w-5xl mx-auto mt-10 p-6 bg-white rounded shadow">
@@ -155,52 +154,39 @@ const LeaveHistory = () => {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6 text-sm sm:text-base">
-          <div className="bg-blue-100 p-3 rounded">
-            ✅ Approved: {leaveSummary.approved}
-          </div>
-          <div className="bg-yellow-100 p-3 rounded">
-            ⏳ Pending: {leaveSummary.pending}
-          </div>
-          <div className="bg-red-100 p-3 rounded">
-            ❌ Rejected: {leaveSummary.rejected}
-          </div>
-          <div className="bg-green-100 p-3 rounded">
-            📘 Earned: {leaveSummary.earned}
-          </div>
-          <div className="bg-purple-100 p-3 rounded">
-            🤒 Sick: {leaveSummary.sick}
-          </div>
-          <div className="bg-orange-100 p-3 rounded">
-            🛑 Casual: {leaveSummary.casual}
-          </div>
+          <div className="bg-blue-100 p-3 rounded">✅ Approved: {leaveSummary.approved}</div>
+          <div className="bg-yellow-100 p-3 rounded">⏳ Pending: {leaveSummary.pending}</div>
+          <div className="bg-red-100 p-3 rounded">❌ Rejected: {leaveSummary.rejected}</div>
+          <div className="bg-green-100 p-3 rounded">📘 Earned: {leaveSummary.earned}</div>
+          <div className="bg-purple-100 p-3 rounded">🤒 Sick: {leaveSummary.sick}</div>
+          <div className="bg-orange-100 p-3 rounded">🛑 Casual: {leaveSummary.casual}</div>
         </div>
 
-        {/* Calendar View */}
+        {/* Calendar */}
         <div className="my-6">
           <h3 className="text-lg font-semibold mb-2 text-gray-700">
             Calendar View of Approved Leaves
           </h3>
-          <div className="bg-white p-4 rounded shadow-md max-w-md mx-auto">
+          <div className="bg-white p-4 rounded shadow-md max-w-md mx-auto relative">
             <Calendar
-              tileClassName={getTileClassName}
+              tileContent={getTileContent}
               calendarType="ISO 8601"
               prev2Label={null}
               next2Label={null}
+              className="w-full"
             />
-            <div className="text-sm mt-4 text-gray-600">
-              <div className="flex gap-4">
-                <div className="flex items-center gap-1">
-                  <span className="w-4 h-4 rounded-full bg-cyan-200 inline-block"></span>
-                  Earned
-                </div>
-                <div className="flex items-center gap-1">
-                  <span className="w-4 h-4 rounded-full bg-purple-200 inline-block"></span>
-                  Sick
-                </div>
-                <div className="flex items-center gap-1">
-                  <span className="w-4 h-4 rounded-full bg-orange-200 inline-block"></span>
-                  Casual
-                </div>
+            <div className="text-sm mt-4 text-gray-600 flex gap-4 justify-center">
+              <div className="flex items-center gap-1">
+                <span className="w-4 h-4 rounded-full bg-cyan-200 inline-block" />
+                Earned
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="w-4 h-4 rounded-full bg-purple-200 inline-block" />
+                Sick
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="w-4 h-4 rounded-full bg-orange-200 inline-block" />
+                Casual
               </div>
             </div>
           </div>
