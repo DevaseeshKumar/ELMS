@@ -4,45 +4,45 @@ A full-stack web application to manage employee leave requests with real-time ap
 
 Project Overview
 
-ELMS is designed to streamline leave management for organizations:
+    ELMS is designed to streamline leave management for organizations:
 
-Employees can apply for leaves while their location and IP are automatically logged.
+    Employees can apply for leaves while their location and IP are automatically logged.
 
-Administrators and HR can approve/reject requests, monitor leave trends, and generate audit-ready reports.
+    Administrators and HR can approve/reject requests, monitor leave trends, and generate audit-ready reports.
 
-Focused on efficiency, transparency, and actionable insights.
+    Focused on efficiency, transparency, and actionable insights.
 
 Key Highlights
 
-Location Logging
+    Location Logging
 
-Automatically captures latitude, longitude, and IP for each leave application.
+    Automatically captures latitude, longitude, and IP for each leave application.
 
-Helps verify application authenticity and monitor remote work locations.
+    Helps verify application authenticity and monitor remote work locations.
 
-Email Notifications
+    Email Notifications
 
-Sends automatic emails for leave approval or rejection.
+    Sends automatic emails for leave approval or rejection.
 
-Keeps employees and managers informed in real-time.
+    Keeps employees and managers informed in real-time.
 
-Export
+    Export
 
-Leave history can be exported to PDF or Excel for auditing and record-keeping.
+    Leave history can be exported to PDF or Excel for auditing and record-keeping.
 
-Analytics & Visualization
+    Analytics & Visualization
 
-Interactive charts show leave trends, statistics, and team leave utilization.
+    Interactive charts show leave trends, statistics, and team leave utilization.
 
-Helps HR and management make data-driven decisions.
+    Helps HR and management make data-driven decisions.
 
 Technology Stack
 Layer	Technology / Tool
-Frontend	React 19, Tailwind CSS, Axios, Recharts, React Toastify
-Backend	Node.js, Express.js, MongoDB
-Deployment	Docker, Render, Jenkins (CI/CD)
-Maps & Geo	Google Maps API
-Features
+    Frontend	React 19, Tailwind CSS, Axios, Recharts, React Toastify
+    Backend	Node.js, Express.js, MongoDB
+    Deployment	Docker, Render, Jenkins (CI/CD)
+    Maps & Geo	Google Maps API
+    Features
 
 Employee
 
