@@ -15,7 +15,7 @@ pipeline {
         stage('Write .env') {
             steps {
                 writeFile file: '.env', text: '''\
-mongodburl=mongodb+srv://ELMS:ELMS@cluster0.uqtzdbr.mongodb.net/elms?retryWrites=true&w=majority&appName=Cluster0
+mongodburl=
 PORT=8000
 EMAIL_USER=thorodinsonuru@gmail.com
 EMAIL_PASS=qzerfjxnvoeupsgp
