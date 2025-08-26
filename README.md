@@ -80,4 +80,5 @@ Access: Open http://localhost:5173
 License
 
 This project is licensed under the MIT License – see the LICENSE file for details.
+
 ![Architecture Diagram](image.png)
