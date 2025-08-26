@@ -96,7 +96,7 @@ Setup Instructions
 
         cd frontend
         npm install
-    npm run dev
+        npm run dev
 
 
 Access: Open http://localhost:5173
