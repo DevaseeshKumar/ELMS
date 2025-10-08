@@ -236,6 +236,7 @@ const updateMyProfile = async (req, res) => {
   }
 };
 
+
 const uploadEmployeeProfilePicture = async (req, res) => {
   try {
     if (!req.file) {

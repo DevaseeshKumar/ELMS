@@ -41,6 +41,7 @@ const EmployeeForgotPassword = () => {
       {message && <p className="text-sm text-center mt-2 text-green-600">{message}</p>}
      
     </div>
+     <Footer />
     </>
   );
 };

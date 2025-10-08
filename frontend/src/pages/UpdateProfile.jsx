@@ -28,6 +28,7 @@ const UpdateProfile = () => {
 
   const [profile, setProfile] = useState(null);
 
+  // Redirect if session expired
   useEffect(() => {
     if (!loading && !employee) {
       navigate("/employee/login", {
@@ -47,7 +48,13 @@ const UpdateProfile = () => {
       });
       const data = await res.json();
       setProfile(data);
-      setFormData(data);
+      setFormData({
+        username: data.username || "",
+        email: data.email || "",
+        phone: data.phone || "",
+        gender: data.gender || "",
+        department: data.department || "",
+      });
     } catch (err) {
       toast.error("Failed to load profile");
     }
@@ -56,50 +63,36 @@ const UpdateProfile = () => {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handlePasswordChange = async () => {
-    if (passwords.newPassword !== passwords.confirmNewPassword) {
+  // ✅ Single handler for profile + password update
+  const handleUpdate = async () => {
+    if (passwords.newPassword && passwords.newPassword !== passwords.confirmNewPassword) {
       toast.error("New passwords do not match");
       return;
     }
 
+    const body = {
+      ...formData,
+      ...(passwords.newPassword ? { currentPassword: passwords.currentPassword, newPassword: passwords.newPassword } : {}),
+    };
+
     try {
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/employee/my-profile`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({
-          currentPassword: passwords.currentPassword,
-          newPassword: passwords.newPassword,
-        }),
+        body: JSON.stringify(body),
       });
 
       const data = await res.json();
-      toast.success(data.message || "Password changed successfully");
-
-      setPasswords({
-        currentPassword: "",
-        newPassword: "",
-        confirmNewPassword: "",
-      });
+      if (res.ok) {
+        toast.success(data.message || "Profile updated successfully");
+        setPasswords({ currentPassword: "", newPassword: "", confirmNewPassword: "" });
+        fetchProfile();
+      } else {
+        toast.error(data.message || "Update failed");
+      }
     } catch (err) {
-      toast.error("Password update failed");
-    }
-  };
-
-  const handleUpdate = async () => {
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/employee/my-profile`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-      toast.success(data.message || "Profile updated");
-      fetchProfile();
-    } catch (err) {
-      toast.error("Profile update failed");
+      toast.error("Update failed");
     }
   };
 
@@ -198,19 +191,11 @@ const UpdateProfile = () => {
               value={formData[field]}
               onChange={handleChange}
               className="w-full border p-2 rounded"
+              disabled={field === "email"} // Optional: email read-only
             />
           ))}
 
-          <button
-            onClick={handleUpdate}
-            className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
-          >
-            Update Profile
-          </button>
-        </div>
-
-        <h3 className="text-lg font-semibold mt-8 mb-2">Change Password</h3>
-        <div className="space-y-3">
+          <h3 className="text-lg font-semibold mt-4 mb-2">Change Password (optional)</h3>
           <input
             type="password"
             name="currentPassword"
@@ -235,11 +220,12 @@ const UpdateProfile = () => {
             onChange={(e) => setPasswords({ ...passwords, confirmNewPassword: e.target.value })}
             className="w-full border p-2 rounded"
           />
+
           <button
-            onClick={handlePasswordChange}
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+            onClick={handleUpdate}
+            className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
           >
-            Change Password
+            Save Changes
           </button>
         </div>
       </div>
