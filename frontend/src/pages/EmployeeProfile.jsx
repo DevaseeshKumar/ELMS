@@ -1,263 +1,116 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "react-toastify/dist/ReactToastify.css";
 import EmployeeNavbar from "../components/EmployeeNavbar";
-import Footer from "../components/Footer";
 import { useEmployeeSession } from "../hooks/useEmployeeSession";
-import Avatar from "../components/Avatar";
+import { useNavigate, useLocation } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Footer from "../components/Footer";
 
 const EmployeeProfile = () => {
   const { employee, loading } = useEmployeeSession();
   const navigate = useNavigate();
-  const fileInputRef = useRef(null);
-  const { token } = useParams(); // used if reset password via email link
-
+  const location = useLocation();
   const [profile, setProfile] = useState(null);
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    phone: "",
-    department: "",
-  });
-  const [passwordData, setPasswordData] = useState({
-    oldPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-  const [newPassword, setNewPassword] = useState(""); // for reset password flow
 
-  // 🔹 Fetch employee profile
+  // Show session expired toast if redirected
   useEffect(() => {
-    if (!employee && !loading) navigate("/employee/login");
-    if (employee) {
-      setProfile(employee);
-      setFormData({
-        username: employee.username || "",
-        email: employee.email || "",
-        phone: employee.phone || "",
-        department: employee.department || "",
+    if (location.state?.message) {
+      toast.warn(location.state.message, {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    if (!loading && !employee) {
+      navigate("/employee/login", {
+        state: { message: "Session expired. Please login again." },
       });
     }
   }, [employee, loading, navigate]);
 
-  // 🔹 Handle input changes
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/employee/my-profile`, {
+          withCredentials: true,
+        });
+        setProfile(res.data);
+      } catch (err) {
+        toast.error("Failed to load profile.");
+        console.error("Profile error", err);
+      }
+    };
 
-  // 🔹 Update profile info
-  const handleUpdateProfile = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.put(`/api/employee/update-profile/${employee._id}`, formData);
-      toast.success("Profile updated successfully!");
-      setProfile(res.data);
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to update profile!");
-    }
-  };
+    fetchProfile();
+  }, []);
 
-  // 🔹 Change password
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
-    const { oldPassword, newPassword, confirmPassword } = passwordData;
-    if (newPassword !== confirmPassword) {
-      toast.error("New passwords do not match!");
-      return;
-    }
-    try {
-      await axios.post(`/api/employee/change-password/${employee._id}`, {
-        oldPassword,
-        newPassword,
-      });
-      toast.success("Password changed successfully!");
-      setPasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" });
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to change password!");
-    }
-  };
-
-  // 🔹 Upload new profile image
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const formData = new FormData();
-    formData.append("image", file);
-    try {
-      const res = await axios.post(`/api/employee/upload-image/${employee._id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      toast.success("Profile picture updated!");
-      setProfile({ ...profile, image: res.data.image });
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to upload image!");
-    }
-  };
-
-  // 🔹 Remove profile image
-  const handleRemoveImage = async () => {
-    try {
-      await axios.delete(`/api/employee/remove-image/${employee._id}`);
-      toast.success("Profile picture removed!");
-      setProfile({ ...profile, image: null });
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to remove image!");
-    }
-  };
-
-  // 🔹 Reset password (token-based via email)
-  const handleResetPassword = async (e) => {
-    e.preventDefault();
-    if (!newPassword) return toast.error("Enter a new password");
-    try {
-      await axios.post(`/api/employee/reset-password/${token}`, { newPassword });
-      toast.success("Password reset successful!");
-      setNewPassword("");
-      navigate("/employee/login");
-    } catch (err) {
-      console.error(err);
-      toast.error("Invalid or expired reset link!");
-    }
-  };
-
-  if (loading || !profile) return <div>Loading...</div>;
+  if (loading || !profile) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <EmployeeNavbar />
+        <div className="flex-grow">
+          <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow-lg rounded-xl animate-pulse">
+            <div className="flex justify-center mb-4">
+              <div className="w-24 h-24 rounded-full bg-gray-300" />
+            </div>
+            <div className="space-y-4">
+              <div className="h-6 bg-gray-300 rounded w-3/4 mx-auto" />
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-4 bg-gray-300 rounded" />
+              ))}
+              <div className="mt-6 h-10 bg-gray-300 rounded" />
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="flex flex-col min-h-screen">
       <EmployeeNavbar />
-      <ToastContainer position="top-center" />
-      <div className="flex flex-col items-center mt-10 px-4">
-        <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-2xl">
-          <div className="flex flex-col items-center">
-            <Avatar src={profile.image} alt="Employee" size={100} />
-            <button
-              onClick={() => fileInputRef.current.click()}
-              className="mt-3 px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600"
-            >
-              Upload Image
-            </button>
-            <button
-              onClick={handleRemoveImage}
-              className="mt-2 text-sm text-red-500 hover:underline"
-            >
-              Remove Image
-            </button>
-            <input
-              type="file"
-              ref={fileInputRef}
-              className="hidden"
-              accept="image/*"
-              onChange={handleImageUpload}
-            />
+      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+
+      <div className="flex-grow">
+        <div className="max-w-md mx-auto mt-10 p-6 bg-gradient-to-br from-white via-cyan-50 to-cyan-100 border border-cyan-200 shadow-xl rounded-2xl transition duration-300 hover:shadow-cyan-200">
+          <div className="flex items-center justify-center mb-6">
+            {profile.profileImage ? (
+              <img
+                src={`${import.meta.env.VITE_API_BASE_URL}${profile.profileImage}`}
+                alt={`${profile.username}'s profile`}
+                className="w-28 h-28 rounded-full object-cover border-4 border-cyan-500 shadow-md"
+              />
+            ) : (
+              <div className="w-28 h-28 bg-cyan-500 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-md">
+                {profile.username?.[0]?.toUpperCase() || "E"}
+              </div>
+            )}
           </div>
 
-          {/* Profile Info Update */}
-          <form onSubmit={handleUpdateProfile} className="mt-6 space-y-4">
-            <h2 className="text-xl font-semibold text-gray-700">Update Profile</h2>
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              placeholder="Username"
-              className="w-full border p-2 rounded-lg"
-            />
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Email"
-              className="w-full border p-2 rounded-lg"
-            />
-            <input
-              type="text"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="Phone"
-              className="w-full border p-2 rounded-lg"
-            />
-            <input
-              type="text"
-              name="department"
-              value={formData.department}
-              onChange={handleChange}
-              placeholder="Department"
-              className="w-full border p-2 rounded-lg"
-            />
-            <button
-              type="submit"
-              className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
-            >
-              Save Changes
-            </button>
-          </form>
+          <h2 className="text-2xl font-bold text-center text-cyan-700 mb-6">My Profile</h2>
 
-          {/* Password Change */}
-          <form onSubmit={handlePasswordChange} className="mt-8 space-y-3">
-            <h2 className="text-xl font-semibold text-gray-700">Change Password</h2>
-            <input
-              type="password"
-              name="oldPassword"
-              value={passwordData.oldPassword}
-              onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
-              placeholder="Old Password"
-              className="w-full border p-2 rounded-lg"
-            />
-            <input
-              type="password"
-              name="newPassword"
-              value={passwordData.newPassword}
-              onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-              placeholder="New Password"
-              className="w-full border p-2 rounded-lg"
-            />
-            <input
-              type="password"
-              name="confirmPassword"
-              value={passwordData.confirmPassword}
-              onChange={(e) =>
-                setPasswordData({ ...passwordData, confirmPassword: e.target.value })
-              }
-              placeholder="Confirm New Password"
-              className="w-full border p-2 rounded-lg"
-            />
-            <button
-              type="submit"
-              className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
-            >
-              Change Password
-            </button>
-          </form>
+          <div className="space-y-2 text-gray-800 text-[15px] leading-relaxed">
+            <p><span className="font-semibold text-cyan-700">👤 Username:</span> {profile.username}</p>
+            <p><span className="font-semibold text-cyan-700">📧 Email:</span> {profile.email}</p>
+            <p><span className="font-semibold text-cyan-700">📱 Phone:</span> {profile.phone}</p>
+            <p><span className="font-semibold text-cyan-700">🚻 Gender:</span> {profile.gender}</p>
+            <p><span className="font-semibold text-cyan-700">🏢 Department:</span> {profile.department}</p>
+          </div>
 
-          {/* Reset Password (via token link) */}
-          {token && (
-            <form onSubmit={handleResetPassword} className="mt-8 space-y-3">
-              <h2 className="text-xl font-semibold text-gray-700">Reset Password</h2>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Enter New Password"
-                className="w-full border p-2 rounded-lg"
-              />
-              <button
-                type="submit"
-                className="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600"
-              >
-                Reset Password
-              </button>
-            </form>
-          )}
+          <button
+            className="mt-6 w-full bg-cyan-600 text-white py-2 rounded-full shadow hover:bg-cyan-700 hover:scale-[1.03] transition-all duration-200"
+            onClick={() => navigate("/employee/update-profile")}
+          >
+            ✏️ Edit Profile
+          </button>
         </div>
       </div>
+
       <Footer />
     </div>
   );

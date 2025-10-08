@@ -199,29 +199,43 @@ const getMyProfile = async (req, res) => {
   }
 };
 
-// Update Profile
 const updateMyProfile = async (req, res) => {
-  if (!req.session.user || !req.session.user._id) {
-    return res.status(401).json({ message: "Not logged in" });
-  }
-
-  const updates = req.body;
-
   try {
-    const employee = await Employee.findByIdAndUpdate(
-      req.session.user._id,
-      updates,
-      { new: true, runValidators: true }
-    ).select("-password -resetToken -resetTokenExpiry");
+    if (!req.session.user || !req.session.user._id) {
+      return res.status(401).json({ message: "Not logged in" });
+    }
 
-    if (!employee) return res.status(404).json({ message: "Employee not found" });
+    const { name, phone, department, designation, currentPassword, newPassword } = req.body;
 
-    res.json({ message: "Profile updated successfully", employee });
+    const employee = await Employee.findById(req.session.user._id);
+    if (!employee) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    // ✅ Handle password change (if requested)
+    if (newPassword) {
+      const isMatch = await bcrypt.compare(currentPassword, employee.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+      employee.password = await bcrypt.hash(newPassword, 10);
+    }
+
+    // ✅ Update other profile fields
+    if (name) employee.name = name;
+    if (phone) employee.phone = phone;
+    if (department) employee.department = department;
+    if (designation) employee.designation = designation;
+
+    await employee.save();
+
+    res.json({ message: "Profile updated successfully" });
   } catch (err) {
-    console.error("Update Profile Error:", err);
+    console.error("Employee Profile Update Error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 const uploadEmployeeProfilePicture = async (req, res) => {
   try {
     if (!req.file) {
